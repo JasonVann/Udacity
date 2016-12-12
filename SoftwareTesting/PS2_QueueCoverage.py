@@ -1,4 +1,4 @@
-# TASK:
+K:
 #
 # Achieve full statement coverage on the Queue class. 
 # You will need to:
@@ -67,7 +67,17 @@ class Queue:
 # Queue class.
 def test():
     ###Your code here.
-    pass
+    q = Queue(1)
+    assert q.empty() == True
+    assert q.full() == False
+    assert q.enqueue(0) == True
+    assert q.full() == True
+    assert q.enqueue(1) == False
+    
+    assert q.dequeue() == 0
+    assert q.dequeue() == None
+    q.checkRep()
+    
 
 test()
 
