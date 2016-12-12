@@ -40,7 +40,93 @@ from queue_test import *
 
 def test():
     ###Your code here.
+    q = Queue(0)
+    assert q.empty() == True
+    assert q.full() == True
+    assert q.enque(1) == False
+    assert q.deque() == None
+    
+    q = Queue(2)
+    is_empty = q.empty()
+    assert is_empty == True
+    value = q.dequeue()
+    assert value == None
+    is_full = q.full()
+    assert is_full == False
+    
+    # Insert 1st item
+    succeeded = q.enqueue(10)
+    assert succeeded == True
+    is_full = q.full()
+    assert is_full == False
+    is_empty = q.empty()
+    assert is_empty == False
 
+    value = q.dequeue()
+    assert value != None
+    #assert value == item2
+    is_empty = q.empty()
+    assert is_empty == True
+    is_full = q.full()
+    assert is_full == False
+
+    succeeded = q.enqueue(10)
+
+    # Insert 2nd item
+    value = q.enqueue(11)
+    assert value == True
+    is_empty = q.empty()
+    assert is_empty == False
+    is_full = q.full()
+    assert is_full == True
+    
+    # Cannot insert any more
+    value = q.enqueue(12)
+    assert value == False
+    is_full = q.full()
+    assert is_full == True
+    is_empty = q.empty()
+    assert is_empty == False
+
+    # Deque
+    value = q.dequeue()
+    assert value != None
+    #assert value == item2
+    is_empty = q.empty()
+    assert is_empty == False
+    is_full = q.full()
+    assert is_full == False
+
+    # Enque again
+    value = q.enqueue(13)
+    assert value == True
+    is_full = q.full()
+    assert is_full == True
+    is_empty = q.empty()
+    assert is_empty == False
+
+    value = q.dequeue()
+    assert value != None
+    is_empty = q.empty()
+    assert is_empty == False
+    is_full = q.full()
+    assert is_full == False
+    
+    # Deque last item
+    value = q.dequeue()
+    assert value != None
+    is_empty = q.empty()
+    assert is_empty == True
+    is_full = q.full()
+    assert is_full == False
+
+    value = q.dequeue()
+    assert value == None
+
+    is_full = q.full()
+    assert is_full == False
+    is_empty = q.empty()
+    assert is_empty == True
 
 
 
