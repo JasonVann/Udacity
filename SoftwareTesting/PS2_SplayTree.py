@@ -142,7 +142,36 @@ class SplayTree:
 # full statement coverage on the SplayTree class.
 def test():
     ###Your code here.
-    pass
+    st = SplayTree()
+    assert st.isEmpty() == True
+    assert st.remove(1) == None
+    
+    assert st.findMin() == None
+    node1 = Node(1)
+    node2 = Node(1)
+    assert node1.equals(node2) == True
+    assert st.findMax() == None
+    assert st.find(1) == None
+    st.insert(1)
+    assert st.find(2) == None
+    st.remove(1)
+    st.insert(1)
+    st.insert(2)
+    st.insert(0)
+    st.insert(2)
+    st.remove(0)
+    st.insert(0)
+    
+    assert st.findMin() == 0
+    st.insert(-1)
+    st.insert(3)
+    assert st.findMin() == -1
+    assert st.findMax() == 3
+    st.find(1)
+    assert st.isEmpty() == False
+    
+    st.remove(1)
+    st.splay(2)
 
 test()
 
