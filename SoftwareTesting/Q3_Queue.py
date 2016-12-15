@@ -70,7 +70,30 @@ class Queue:
 
 # Write a random tester for the Queue class.
 def test():
-
+    A = []
+    q = Queue(100)
+    for i in range(10000):
+        a = random.random()
+        num = random.randint(1,10000)
+        if a < 0.5:
+            temp = q.size
+            res = q.enqueue(num)
+            if temp < q.max:
+                A.append(num)
+                assert res == True
+            else:
+                assert res == False
+            q.checkRep()
+        else:
+            temp = q.size
+            res = q.dequeue()
+            if temp > 0:
+                num = A.pop(0)
+                assert res == num
+            else:
+                assert res == None
+            q.checkRep()
+    
 test()
 
 
