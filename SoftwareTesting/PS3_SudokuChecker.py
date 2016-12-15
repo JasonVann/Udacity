@@ -101,9 +101,38 @@ hard = [[1,0,0,0,0,7,0,9,0],
         [0,0,7,0,0,0,3,0,0]]
 
 def check_sudoku(grid):
-    ###Your code here.
-    pass
-
+    # Sanity check
+    for i in range(9):
+        row = grid[i]
+        if len(row) < 9:
+            return None
+        for j in row:
+            if j not in range(0,10):
+                return None
+    # Then check True/False
+    for i in range(9):
+        row = grid[i]
+        for j in range(1,10):
+            if row.count(j) > 1:
+                return False
+        col = []
+        for k in range(9):
+            col.append(grid[k][i])
+        for j in range(1,10):
+            if col.count(j) > 1:
+                return False
+    # Then check sub-grid
+    for i in range(3):
+        for j in range(3):
+            sub = []
+            for k in range(9):
+                sub.append(grid[i*3 + k/3][j*3+k%3])
+            #print 131, sub
+        for k in range(1,10):
+            if sub.count(k) > 1:
+                return False
+    return True
+    
 print check_sudoku(ill_formed) # --> None
 print check_sudoku(valid)      # --> True
 print check_sudoku(invalid)    # --> False
