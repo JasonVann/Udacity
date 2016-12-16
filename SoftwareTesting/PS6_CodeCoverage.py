@@ -1,4 +1,4 @@
-ode Coverage
+# Code Coverage
 # ---------------
 # Achieve full statement coverage and parameter value coverage for
 # strings, integers, and booleans on this enhanced Queue class.
@@ -92,4 +92,32 @@ class Queue:
 
 # Provide full statement and parameter value coverage of the Queue class
 def test():
+    q = Queue(1)
+    assert q.empty() == True
+    assert q.full() == False
+    assert q.dequeue() == None
+    q.enqueue(1)
+    assert q.empty() == False
+    assert q.full() == True
+    q.checkRep()
+    assert q.enqueue(2) == False
+    assert q.dequeue() == 1
+    assert q.enqueue(1.1) == False
+    assert q.enqueue('a') == True
+    q.clear()
+    assert q.enqueue(True) == True
     
+    q = Queue(3)
+    A = [1,2,'a', True]
+    assert q.enqueueall(A) == False
+    q= Queue(5)
+    assert q.enqueueall(A) == True
+    q.checkRep()
+    assert q.enqueue(1) == True
+    q.dequeue()
+    q.checkRep() 
+    
+    print q
+    
+    
+test()
