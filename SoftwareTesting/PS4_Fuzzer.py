@@ -12,6 +12,12 @@
 
 import random
 import math
+import string
+import subprocess
+import time
+
+file_list = ['C4M1L4_Lec1_Introduction.pptx.pdf']
+app_list = ['/Applications/Preview.app/Contents/MacOS/Preview']
 
 content = """
 Lorem ipsum dolor sit amet, consectetur adipiscing elit.
@@ -28,20 +34,36 @@ In hac habitasse platea dictumst. Morbi et leo enim.
 Aenean ipsum ipsum, laoreet vel cursus a, tincidunt ultrices augue.
 Aliquam ac erat eget nunc lacinia imperdiet vel id nulla."""
 
+fuzz_output = '/Users/jasonniu/Documents/Projects/MOOC/Udacity/SoftwareTesting/fuzz.pdf'
+FuzzFactor = 25
 
 def fuzzit(content):
 # Write a random fuzzer for a simulated text viewer application
-    N = 2
-    count = 100
+    
+    num_tests = 1
     A = []
-    for i in range(count):
-        buf = bytearray(content)
-        num = random.randrange(math.ceil((float(len(buf)) / N))) + 1
+    fail = 0
+    for i in range(num_tests):
+        file = random.choice(file_list)
+        app = random.choice(app_list)
+        buf = bytearray(open(file, 'rb').read())
+        # Charlie Miller's Method
+        num = random.randrange(math.ceil((float(len(buf)) / FuzzFactor))) + 1
         for j in range(num):
             rbyte = random.randrange(256)
             rn = random.randrange(len(buf))
             buf[rn] = "%c"%(rbyte)
         A.append(str(buf))
-    return A
+        open(fuzz_output, 'wb').write(buf)
+        process = subprocess.Popen([app, fuzz_output])
+
+        time.sleep(1)
+        crashed = process.poll()
+        if not crashed:
+            process.terminate()
+        else:
+            fail += 1
+    print fail
+    #return A
     
-#print fuzzit(content)
+fuzzit(content)
