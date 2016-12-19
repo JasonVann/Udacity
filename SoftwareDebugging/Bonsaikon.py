@@ -28,7 +28,10 @@ class Range:
     
     # Invoke this for every value
     def track(self, value):
-        # YOUR CODE
+        if self.max == None or value > self.max:
+            self.max = value
+        if self.min == None or value < self.min:
+            self.min = value
             
     def __repr__(self):
         return repr(self.min) + ".." + repr(self.max)
@@ -49,7 +52,30 @@ class Invariants:
             # If the event is "return", the return value
             # is kept in the 'arg' argument to this function.
             # Use it to keep track of variable "ret" (return)
-    
+            fn = frame.f_code.co_name
+            param = frame.f_locals.keys()[0]
+            if fn not in self.vars:
+                dic = {}
+                self.vars[fn] = dic
+            if event not in self.vars[fn]:
+                dic = self.vars[fn]
+                dic2 = {}
+                if event == 'return':
+                    dic2['ret'] = Range()
+                else:
+                    dic2[param] = Range()
+                dic[event] = dic2
+            else:
+                print 63, self.vars, fn, param, '\n'
+                print 64, frame, event, arg, '\n'
+                print 67, frame.f_locals, '\n'
+                if event == 'return':
+                    self.vars[fn][event]['ret'].track(arg)
+                else:
+                    v = frame.f_locals[param]
+                    self.vars[fn][event][param].track(v)
+                print 76, self.vars
+
     def __repr__(self):
         # Return the tracked invariants
         s = ""
@@ -77,10 +103,15 @@ def traceit(frame, event, arg):
 sys.settrace(traceit)
 # Tester. Increase the range for more precise results when running locally
 eps = 0.000001
-for i in range(1, 10):
-    r = int(random.random() * 1000) # An integer value between 0 and 999.99
+
+inputs = [3, 0, 10]
+
+for i in range(0, 3):
+    #r = int(random.random() * 1000) # An integer value between 0 and 999.99
+    r = inputs[i]
     z = square_root(r, eps)
     z = square(z)
+
 sys.settrace(None)
 print invariants
 

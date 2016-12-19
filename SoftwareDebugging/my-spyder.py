@@ -28,8 +28,8 @@ def main():
     print remove_html_markup("'<b>foo</b>'")
 
 # globals
-breakpoints = {14: True}
-watchpoints = {'c': True}
+breakpoints = {} #{14: True}
+watchpoints = {'c': True, 'tag': True}
 stepping = False
 
 """ *** INSTRUCTIONS ***
@@ -103,9 +103,9 @@ def debug(command, my_locals):
 commands = ["w out", "c", "c", "c", "c", "c", "c", "q"]
 
 def input_command():
-    #command = raw_input("(my-spyder) ")
+    command = raw_input("(my-spyder) ")
     global commands
-    command = commands.pop(0)
+    #command = commands.pop(0)
     return command
 
 def traceit(frame, event, trace_arg):
@@ -120,12 +120,12 @@ def traceit(frame, event, trace_arg):
                 resume = debug(command, frame.f_locals)
     return traceit
 
-'''
+
 # Using the tracer
 sys.settrace(traceit)
 main()
 sys.settrace(None)
-'''
+
 
 '''
 print breakpoints
@@ -133,9 +133,11 @@ debug("b 5", {'quote': False, 's': 'xyz', 'tag': False, 'c': 'b', 'out': ''})
 print breakpoints == {9: True, 5: True}
 '''
 
+'''
 #Simple test 
 print watchpoints
 debug("w s", {'s': 'xyz', 'tag': False})
 print watchpoints
 #>>> {'c': True}
 #>>> {'c': True, 's': True}
+'''
