@@ -3,7 +3,7 @@
 # See instructions around line 34
 import sys
 import readline
-
+sfa
 # Our buggy program
 def remove_html_markup(s):
     tag   = False
@@ -41,6 +41,12 @@ in a form 'var = repr(value)', if
 the 'p' is followed by an argument,
 or print 'No such variable:', arg
 if no such variable exists.
+
+Improve and expand this function to accept 
+a breakpoint command 'b <line>'.
+Add the line number to the breakpoints dictionary
+or print 'You must supply a line number' 
+if 'b' is not followed by a line number.
 """
 def debug(command, my_locals):
     global stepping
@@ -66,6 +72,12 @@ def debug(command, my_locals):
             else:
                 print 'No such variable:', arg
         
+    elif command.startswith('b'):    # breakpoint         
+        if arg == None:
+            print 'You must supply a line number'
+        else:
+            breakpoints[int(arg)] = True
+            
     elif command.startswith('q'):   # quit
         sys.exit(0)
     else:
@@ -73,7 +85,8 @@ def debug(command, my_locals):
         
     return False
 
-commands = ["p", "s", "p tag", "p foo", "q"]
+#commands = ["p", "s", "p tag", "p foo", "q"]
+commands = ["b 5", "c", "c", "q"]
 
 def input_command():
     #command = raw_input("(my-spyder) ")
@@ -93,8 +106,14 @@ def traceit(frame, event, trace_arg):
                 resume = debug(command, frame.f_locals)
     return traceit
 
+'''
 # Using the tracer
 sys.settrace(traceit)
 main()
 sys.settrace(None)
+'''
+
+print breakpoints
+debug("b 5", {'quote': False, 's': 'xyz', 'tag': False, 'c': 'b', 'out': ''})
+print breakpoints == {9: True, 5: True}
 
