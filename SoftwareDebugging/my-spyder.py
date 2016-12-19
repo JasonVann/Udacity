@@ -3,7 +3,7 @@
 # See instructions around line 34
 import sys
 import readline
-sfa
+
 # Our buggy program
 def remove_html_markup(s):
     tag   = False
@@ -28,7 +28,8 @@ def main():
     print remove_html_markup("'<b>foo</b>'")
 
 # globals
-breakpoints = {9: True}
+breakpoints = {14: True}
+watchpoints = {'c': True}
 stepping = False
 
 """ *** INSTRUCTIONS ***
@@ -47,6 +48,12 @@ a breakpoint command 'b <line>'.
 Add the line number to the breakpoints dictionary
 or print 'You must supply a line number' 
 if 'b' is not followed by a line number.
+
+Improve and expand the debug function to accept 
+a watchpoint command 'w <var name>'.
+Add the variable name to the watchpoints dictionary
+or print 'You must supply a variable name' 
+if 'w' is not followed by a string.
 """
 def debug(command, my_locals):
     global stepping
@@ -78,6 +85,12 @@ def debug(command, my_locals):
         else:
             breakpoints[int(arg)] = True
             
+    elif command.startswith('w'):    # watch variable
+        if arg == None:
+            print 'You must supply a variable name'
+        else:
+            watchpoints[arg] = True
+            
     elif command.startswith('q'):   # quit
         sys.exit(0)
     else:
@@ -86,7 +99,8 @@ def debug(command, my_locals):
     return False
 
 #commands = ["p", "s", "p tag", "p foo", "q"]
-commands = ["b 5", "c", "c", "q"]
+#commands = ["b 5", "c", "c", "q"]
+commands = ["w out", "c", "c", "c", "c", "c", "c", "q"]
 
 def input_command():
     #command = raw_input("(my-spyder) ")
@@ -113,7 +127,15 @@ main()
 sys.settrace(None)
 '''
 
+'''
 print breakpoints
 debug("b 5", {'quote': False, 's': 'xyz', 'tag': False, 'c': 'b', 'out': ''})
 print breakpoints == {9: True, 5: True}
+'''
 
+#Simple test 
+print watchpoints
+debug("w s", {'s': 'xyz', 'tag': False})
+print watchpoints
+#>>> {'c': True}
+#>>> {'c': True, 's': True}
