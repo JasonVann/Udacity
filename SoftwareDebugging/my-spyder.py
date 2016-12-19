@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 # Simple debugger
+# See instructions around line 34
 import sys
 import readline
 
+# Our buggy program
 def remove_html_markup(s):
     tag   = False
     quote = False
@@ -18,7 +20,7 @@ def remove_html_markup(s):
         elif not tag:
             out = out + c
     return out
-
+    
 # main program that runs the buggy program
 def main():
     print remove_html_markup('xyz')
@@ -26,13 +28,24 @@ def main():
     print remove_html_markup("'<b>foo</b>'")
 
 # globals
-breakpoints = {9: True, 14: True}
+breakpoints = {9: True}
 stepping = False
 
+""" *** INSTRUCTIONS ***
+Improve and expand this function to accept 
+a print command 'p <arg>'.
+If the print command has no argument,
+print out the dictionary that holds all variables.
+Print the value of the supplied variable
+in a form 'var = repr(value)', if
+the 'p' is followed by an argument,
+or print 'No such variable:', arg
+if no such variable exists.
+"""
 def debug(command, my_locals):
     global stepping
     global breakpoints
-
+    
     if command.find(' ') > 0:
         arg = command.split(' ')[1]
     else:
@@ -44,14 +57,23 @@ def debug(command, my_locals):
     elif command.startswith('c'):   # continue
         stepping = False
         return True
+    elif command.startswith('p'):    # print 
+        if arg == None:
+            print my_locals
+        else:
+            if arg in my_locals:
+                print arg, '=', repr(my_locals[arg])
+            else:
+                print 'No such variable:', arg
+        
     elif command.startswith('q'):   # quit
         sys.exit(0)
     else:
         print "No such command", repr(command)
-
+        
     return False
 
-commands = ["s", "s", "q"]
+commands = ["p", "s", "p tag", "p foo", "q"]
 
 def input_command():
     #command = raw_input("(my-spyder) ")
@@ -71,8 +93,8 @@ def traceit(frame, event, trace_arg):
                 resume = debug(command, frame.f_locals)
     return traceit
 
+# Using the tracer
 sys.settrace(traceit)
-
-print remove_html_markup('xyz')
-
+main()
 sys.settrace(None)
+
