@@ -66,11 +66,13 @@ class Invariants:
             if event not in self.vars[fn]:
                 dic = self.vars[fn]
                 dic2 = {}
-                dic2['ret'] = Range()
-                dic2['ret'].track(arg)
+                if arg is not None:
+                    dic2['ret'] = Range()
+                    dic2['ret'].track(arg)
                 dic[event] = dic2
-               
-            self.vars[fn][event]['ret'].track(arg)
+
+            if arg is not None:
+                self.vars[fn][event]['ret'].track(arg)
             for param in frame.f_locals:
                 if param not in self.vars[fn][event]:
                     self.vars[fn][event][param] = Range()
