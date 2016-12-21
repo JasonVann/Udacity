@@ -20,6 +20,7 @@ import random
 
 def ddmin(s):
     n = 2     # Initial granularity
+    i = test_cases.index(s)
     while len(s) >= 2:
         start = 0
         subset_length = len(s) / n
@@ -45,5 +46,10 @@ def ddmin(s):
             n = min(n * 2, len(s))
     return s
 
-answer = ['' for _ in test_cases] # YOUR ANSWER SHOULD GO IN THIS VARIABLE
+answer = []
+for s in test_cases:
+    res = ddmin(s)
+    answer.append(res)
+#answer = ['' for _ in test_cases] # YOUR ANSWER SHOULD GO IN THIS VARIABLE
+print answer
 
