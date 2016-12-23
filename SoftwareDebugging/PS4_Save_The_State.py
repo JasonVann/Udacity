@@ -39,6 +39,13 @@ def trace_fetch_state(frame, event, arg):
     global the_state
 
     # YOUR CODE HERE
+    #print 42, the_line, the_iteration, frame.f_lineno, frame.f_locals
+    if frame.f_lineno == the_line:
+        #print 43, the_line, the_iteration
+        the_iteration -= 1
+        if the_iteration == 0:
+            the_state = copy.deepcopy(frame.f_locals)
+    return trace_fetch_state
 
 # This function allows you to get the state of the program
 # at specified line and iteration and return it
