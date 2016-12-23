@@ -34,7 +34,13 @@ def trace_fetch_state(frame, event, arg):
     global the_iteration
     global the_state
     # COPY YOUR CODE HERE
-
+    if frame.f_lineno == the_line:
+        #print 43, the_line, the_iteration
+        the_iteration -= 1
+        if the_iteration == 0:
+            the_state = copy.deepcopy(frame.f_locals)
+    return trace_fetch_state
+    
 # This function allows you to get the state of the program
 # at specified line and iteration and return it
 def get_state(input, line, iteration):
@@ -66,7 +72,18 @@ def trace_apply_diff(frame, event, arg):
     global the_diff
 
     # YOUR CODE HERE
-    
+    #print 75, frame.f_locals, the_diff
+    if frame.f_lineno == the_line:
+        #print 43, the_line, the_iteration
+        the_iteration -= 1
+        if the_iteration == 0:
+            #the_state = copy.deepcopy(frame.f_locals)
+            print 80, frame.f_locals
+            for (k,v) in the_diff:
+                if k in frame.f_locals:
+                    frame.f_locals[k] = v
+            #print 85, frame.f_locals 
+    return trace_apply_diff
     
 # Testing function: Call remove_html_output, stop at THE_LINE/THE_ITERATION, 
 # and apply the diffs in DIFFS at THE_LINE
