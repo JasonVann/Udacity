@@ -63,7 +63,13 @@ def trace_fetch_state(frame, event, arg):
     global the_iteration
     global the_state
     # COPY YOUR CODE HERE
-
+    if frame.f_lineno == the_line:
+        #print 43, the_line, the_iteration
+        the_iteration -= 1
+        if the_iteration == 0:
+            the_state = copy.deepcopy(frame.f_locals)
+    return trace_fetch_state
+    
 # Get the state at LINE/ITERATION
 def get_state(input, line, iteration):
     global the_line
@@ -85,7 +91,18 @@ def trace_apply_diff(frame, event, arg):
     global the_diff
     global the_iteration
     # COPY YOUR CODE HERE
-
+    if frame.f_lineno == the_line:
+        #print 43, the_line, the_iteration
+        the_iteration -= 1
+        if the_iteration == 0:
+            #the_state = copy.deepcopy(frame.f_locals)
+            #print 80, frame.f_locals
+            for (k,v) in the_diff:
+                if k in frame.f_locals:
+                    frame.f_locals[k] = v
+            #print 85, frame.f_locals 
+    return trace_apply_diff
+    
 # Testing function: Call remove_html_output, stop at THE_LINE/THE_ITERATION, 
 # and apply the diffs in DIFFS at THE_LINE
 def test(diffs):
@@ -127,8 +144,8 @@ def auto_cause_chain(locations):
         # HINT: you can use the variables html_pass and html_fail,
         # and the function you developed earlier - get_state
         # to achieve that.
-        state_pass = 
-        state_fail = 
+        state_pass = get_state(html_pass, line, iteration)
+        state_fail = get_state(html_fail, line, iteration)
     
         # Compute the differences between the passing and failing runs.
         diffs = []
