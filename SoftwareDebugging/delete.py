@@ -64,14 +64,45 @@ def debug(command, my_locals):
         return True
     elif command.startswith('p'):    # print 
         # PS1 CODE
-        pass
+        if arg == None:
+            print my_locals
+        else:
+            if arg in my_locals:
+                print arg, '=', repr(my_locals[arg])
+            else:
+                print 'No such variable:', arg
     elif command.startswith('b'):    # breakpoint         
         # PS1 CODE
-        pass
+        if arg == None:
+            print 'You must supply a line number'
+        else:
+            breakpoints[int(arg)] = True
     elif command.startswith('w'):    # watch variable
         # PS1 CODE
+        if arg == None:
+            print 'You must supply a variable name'
+        else:
+            watchpoints[arg] = True
     elif command.startswith('d'):    # delete watch/break point
         # YOUR CODE HERE
+        cmds = command.split()
+        if cmds[1] == 'b':
+            try:
+                cmds[2] = int(cmds[2])
+                if cmds[2] in breakpoints:
+                    breakpoints.pop(cmds[2])
+                else:
+                    print 'No such breakpoint defined', repr(cmds[2])
+            except:
+                print 'Incorrect command'
+        elif cmds[1] == 'w':
+            if cmds[2] in watchpoints:
+                watchpoints.pop(cmds[2])
+            else:
+                print repr(cmds[2]), 'is not defined as watchpoint'
+        else:
+            print 'Incorrect command'
+            
     elif command.startswith('q'):   # quit
         print "Exiting my-spyder..."
         sys.exit(0)
