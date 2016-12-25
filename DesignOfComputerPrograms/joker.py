@@ -30,7 +30,41 @@ def best_wild_hand(hand):
     "Try all values for jokers in all 5-card selections."
     
     # Your code here
-
+    joker1 = []
+    joker2 = []
+    if '?B' in hand:
+        joker1 = [r+s for r in '23456789TJQK' for s in 'SC']
+        hand.remove('?B')
+    if '?R' in hand:
+        joker2 = [r+s for r in '23456789TJQK' for s in 'HD']
+        hand.remove('?R')
+        
+    #print 39, joker1, joker2
+    res = hand[:5]
+    if len(joker1) > 0 and len(joker2) > 0:
+        cand = itertools.product(itertools.combinations(hand, 3), itertools.combinations(joker1, 1), itertools.combinations(joker2, 1))
+        #res = max(cand, key = hand_rank)
+        for c in cand:
+            d = list(c[0] + c[1] + c[2])
+            #print 48, c, d
+            if hand_rank(d) > hand_rank(res):
+                res = d
+    elif len(joker1) > 0 or len(joker2) > 0:
+        joker1 = joker1 + joker2
+        cand = itertools.product(itertools.combinations(hand, 4), itertools.combinations(joker1, 1))
+        #res = max(cand, key = hand_rank)
+        for c in cand:
+            d = list(c[0] + c[1])
+            #print 58, c, d
+            if hand_rank(d) > hand_rank(res):
+                res = d
+    else:
+        res = max(itertools.combinations(hand, 5), key = hand_rank)
+        
+    #a = max(itertools.combinations(hand, 5), key = hand_rank)
+    #b = max(itertools.combinations(hand, 5), key = hand_rank)
+    return res
+    
 def test_best_wild_hand():
     assert (sorted(best_wild_hand("6C 7C 8C 9C TC 5C ?B".split()))
             == ['7C', '8C', '9C', 'JC', 'TC'])
@@ -39,6 +73,7 @@ def test_best_wild_hand():
     assert (sorted(best_wild_hand("JD TC TH 7C 7D 7S 7H".split()))
             == ['7C', '7D', '7H', '7S', 'JD'])
     return 'test_best_wild_hand passes'
+
 
 # ------------------
 # Provided Functions
@@ -49,6 +84,7 @@ def test_best_wild_hand():
 
 def hand_rank(hand):
     "Return a value indicating the ranking of a hand."
+    #print 72, hand
     ranks = card_ranks(hand) 
     if straight(ranks) and flush(hand):
         return (8, max(ranks))
@@ -102,4 +138,6 @@ def two_pair(ranks):
         return (pair, lowpair)
     else:
         return None 
+
+test_best_wild_hand()
 
