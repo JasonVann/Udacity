@@ -19,7 +19,7 @@ def remove_html_markup(s):
     tag   = False
     quote = False
     out   = ""
-
+    
     for c in s:
 
         if c == '<' and not quote:
@@ -33,11 +33,14 @@ def remove_html_markup(s):
 
     return out
     
+#print 38, remove_html_markup('<b>foo</b>')
+
 def ddmin(s):
     # you may need to use this to test if the values you pass actually make
     # test fail.
-    assert test(s) == "FAIL"
-
+    
+    assert test(s) == 'FAIL'
+    
     n = 2     # Initial granularity
     while len(s) >= 2:
         start = 0
@@ -70,7 +73,8 @@ def traceit(frame, event, arg):
     global coverage
 
     # YOUR CODE HERE
-        
+    #print 73, frame.f_code
+    coverage.append(frame.f_lineno)
     return traceit
 
 # We use these variables to communicate between callbacks and drivers
@@ -134,31 +138,64 @@ def test(diffs):
 
     line      = the_line
     iteration = the_iteration
-    
+    #print 141, the_input
     the_diff = diffs
     sys.settrace(trace_apply_diff)
+    '''
+    print 144, the_input, the_diff
+    
+    if the_input == None:
+        return 'FAIL'
+    '''
     y = remove_html_markup(the_input)
     sys.settrace(None)
 
     the_line      = line
     the_iteration = iteration
-
+    
+    #print 159, y
+    
     if y.find('<') == -1:
         return "PASS"
     else:
         return "FAIL"
+
+#the_input = "'<b>foo</b>'"
+#a = [('s', '"<b>foo</b>"'), ('c', '"'), ('out', '<b>foo</b>')]
+
+#print 156, test(a)
 
 def make_locations(coverage):
     # YOUR CODE HERE
     # This function should return a list of tuples in the format
     # [(line, iteration), (line, iteration) ...], as auto_cause_chain
     # expects.
+    #print 156, coverage
+    dic = {}
+    locations = []
+    ''''
+    for l in coverage:
+        if l not in dic:
+            dic[l] = 0
+        dic[l] += 1
+        locations.append((l, dic[l]))
+    #print 165, locations
+    '''
+    last_l = 0
+    iter = 1
+    for l in coverage:
+        if l <= last_l:
+            iter += 1
+        locations.append((l, iter))
+        last_l = l
     return locations
 
 def auto_cause_chain(locations):
     global html_fail, html_pass, the_input, the_line, the_iteration, the_diff
     print "The program was started with", repr(html_fail)
 
+    dic = {}
+    break0 = False
     # Test over multiple locations
     for (line, iteration) in locations:
 
@@ -166,12 +203,24 @@ def auto_cause_chain(locations):
         state_pass = get_state(html_pass, line, iteration)
         state_fail = get_state(html_fail, line, iteration)
     
+        if state_fail == None or state_pass == None:
+            continue
+        
+        #print 179, state_pass, state_fail
         # Compute the differences
         diffs = []
-        for var in state_fail.keys():
+        for var in state_fail:
+            '''
+            if var == 'out':
+                continue
+            '''
             if not state_pass.has_key(var) or state_pass[var] != state_fail[var]:
                 diffs.append((var, state_fail[var]))
  
+        #print 185, diffs, html_pass
+        if len(diffs) == 0:
+            continue
+        
         # Minimize the failure-inducing set of differences
         # Since this time you have all the covered lines and iterations in
         # locations, you will have to figure out how to automatically detect
@@ -184,7 +233,22 @@ def auto_cause_chain(locations):
         #    cause = ddmin(diffs)
         #    # Pretty output
         #    print "Then", var, "became", repr(value)
+        cause = ddmin(diffs)
+        #print "Then, in Line " + repr(line) + " (iteration " + repr(iteration) + "),",
+        for (var, value) in cause:
             
+            if var in dic and dic[var] == value:
+                continue
+            
+            dic[var] = value
+            print "Then", var, 'became', repr(value)
+            
+            if var == 'out' and value == '<':
+                break0 = True
+        
+        if break0:
+            break
+        
     print "Then the program failed."
 
 ###### Testing runs
@@ -193,6 +257,7 @@ def auto_cause_chain(locations):
 html_fail = '"<b>foo</b>"'
 html_pass = "'<b>foo</b>'"
 
+
 # This will fill the coverage variable with all lines executed in a
 # failing run
 coverage = []
@@ -200,8 +265,11 @@ sys.settrace(traceit)
 remove_html_markup(html_fail)
 sys.settrace(None)
 
+#print 204, coverage
 locations = make_locations(coverage)
+#print 214, locations
 auto_cause_chain(locations)
+
 
 # The coverage :
 # [8, 9, 10, 11, 12, 14, 16, 17, 11, 12... # and so on
