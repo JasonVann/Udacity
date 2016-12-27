@@ -33,14 +33,36 @@ def slow_inverse(f, delta=1/128.):
             x += delta
         # Now x is too big, x-delta is too small; pick the closest to y
         return x if (f(x)-y < y-f(x-delta)) else x-delta
-    return f_1 
+        
+    return f_1
 
 def inverse(f, delta = 1/128.):
     """Given a function y = f(x) that is a monotonically increasing function on
     non-negatve numbers, return the function x = f_1(y) that is an approximate
     inverse, picking the closest value to the inverse, within delta."""
+    def fast(y):
+        lo = 0
+        hi = y
+        #print 40, lo, hi
+        while lo <= hi:
+            mid = (lo+hi)/2.
+            temp = f(mid)
+            #print 44, temp, mid, lo, hi
+            if abs(temp - y) <= delta:
+                #print 44, mid
+                return mid
+            elif temp - y > delta:
+                hi = mid 
+            else:
+                lo = mid
+        #return mid
+    return fast
     
 def square(x): return x*x
-sqrt = slow_inverse(square)
+ssqrt = slow_inverse(square)
 
+sqrt = inverse(square)
+
+print ssqrt(1000000000)
 print sqrt(1000000000)
+#print sqrt(1000000000)
