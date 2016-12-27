@@ -30,7 +30,31 @@ def subway(**lines):
     """Define a subway map. Input is subway(linename='station1 station2...'...).
     Convert that and return a dict of the form: {station:{neighbor:line,...},...}"""
     ## your code here
+    dic = {}
+    for k, v in lines.items():
+        #print 34, k
+        #print 35, v
+        val = v.split()
+        for i in range(len(val)):
+            cur = val[i]
+            #print 38, cur, i
+            temp = {}
+            if cur not in dic:
+                dic[cur] = temp
+            else:
+                temp = dic[cur]
+            if i > 0:
+                pre = val[i-1]
+                temp[pre] = k
+            if i != len(val) - 1:
+                next = val[i+1]
+                temp[next] = k
+    print 46, dic
+    return dic
 
+import time
+start = time.time()
+            
 boston = subway(
     blue='bowdoin government state aquarium maverick airport suffolk revere wonderland',
     orange='oakgrove sullivan haymarket state downtown chinatown tufts backbay foresthills',
@@ -40,12 +64,37 @@ boston = subway(
 def ride(here, there, system=boston):
     "Return a path on the subway system from here to there."
     ## your code here
-
+    # state = (here, there)
+    def is_goal(state):
+        return state == there
+    
+    def successors(state):
+        here = state
+        dic = {}
+        #print 72, here, system[here]
+        for c in system[here]:
+            #print 73, c
+            dic[c] = system[here][c]
+        #print 76, dic
+        return dic
+        
+    start = here
+    return shortest_path_search(start, successors, is_goal)
+    
+    
 def longest_ride(system):
     """"Return the longest possible 'shortest path' 
     ride between any two stops in the system."""
     ## your code here
-
+    res = []
+    cand = [(a, b) for a in system for b in system]
+    #print 100, len(cand), cand
+    for (a, b) in cand:
+        path = ride(a, b)
+        if len(path) > len(res):
+            res = path
+    return res
+    
 def shortest_path_search(start, successors, is_goal):
     """Find the shortest path from start state to a state
     such that is_goal(state) is true."""
@@ -60,7 +109,9 @@ def shortest_path_search(start, successors, is_goal):
             if state not in explored:
                 explored.add(state)
                 path2 = path + [action, state]
+                #print 100, state, path2
                 if is_goal(state):
+                    #print 101, path2
                     return path2
                 else:
                     frontier.append(path2)
@@ -75,7 +126,9 @@ def path_actions(path):
     return path[1::2]
 
 def test_ride():
-    assert ride('mit', 'government') == [
+    test1 = ride('mit', 'government') 
+    print 117, test1
+    assert test1 == [
         'mit', 'red', 'charles', 'red', 'park', 'green', 'government']
     assert ride('mattapan', 'foresthills') == [
         'mattapan', 'red', 'umass', 'red', 'south', 'red', 'downtown',
@@ -92,5 +145,5 @@ def test_ride():
     assert len(path_states(longest_ride(boston))) == 16
     return 'test_ride passes'
 
-print test_ride()
+print test_ride(), time.time() - start
 
