@@ -1,5 +1,4 @@
-# -----------------
-# User Instructions
+er Instructions
 # 
 # This problem deals with the one-player game foxes_and_hens. This 
 # game is played with a deck of cards in which each card is labelled
@@ -25,9 +24,13 @@
 
 import random
 
+f = 0
+h = 0
+
 def foxes_and_hens(strategy, foxes=7, hens=45):
     """Play the game of foxes and hens."""
     # A state is a tuple of (score-so-far, number-of-hens-in-yard, deck-of-cards)
+    
     state = (score, yard, cards) = (0, 0, 'F'*foxes + 'H'*hens)
     while cards:
         action = strategy(state)
@@ -39,7 +42,22 @@ def do(action, state):
     # Make sure you always use up one card.
     #
     # your code here
-    
+    (score, yard, cards) = state
+    #print 43, action
+    if action == 'wait':
+        c = random.choice(cards)
+        i = cards.index(c)
+        if c == 'F':
+            yard = 0
+        else:
+            yard += 1
+        return (score, yard, cards[:i] + cards[i+1:])
+    elif action == 'gather':
+        c = random.choice(cards)
+        i = cards.index(c)
+        return (score + yard, 0, cards[:i] + cards[i+1:])
+    raise ValueError
+        
 def take5(state):
     "A strategy that waits until there are 5 hens in yard, then gathers."
     (score, yard, cards) = state
@@ -53,12 +71,38 @@ def average_score(strategy, N=1000):
 
 def superior(A, B=take5):
     "Does strategy A have a higher average score than B, by more than 1.5 point?"
-    return average_score(A) - average_score(B) > 1.5
+    res1 = average_score(A) 
+    res2 = average_score(B)
+    print 79, res1, res2
+    return res1 - res2 > 1.5
 
+def prob(state):
+    (score, yard, cards) = state
+    
+    f_left = cards.count('F')
+    h_left = cards.count('H')
+    
+def take4(state):
+    "A strategy that waits until there are 5 hens in yard, then gathers."
+    (score, yard, cards) = state
+    if yard < 3:
+        return 'wait'
+    else:
+        return 'gather'
+        
 def strategy(state):
     (score, yard, cards) = state
-    # your code here
-
+    
+    f_left = cards.count('F')
+    h_left = cards.count('H')
+    if f_left == 0:
+        return 'wait'
+    return take4(state)
+    # Not optimal sol
+    if score + (yard + 1.) * h_left / (h_left + f_left) > score + yard: #yard * 1.0 * f_left / (h_left + f_left):
+        return 'wait'
+    return 'gather'
+    
 def test():
     gather = do('gather', (4, 5, 'F'*4 + 'H'*10))
     assert (gather == (9, 0, 'F'*3 + 'H'*10) or 
@@ -68,6 +112,7 @@ def test():
     assert (wait == (10, 4, 'FFH') or
             wait == (10, 0, 'FHH'))
     
+    print 85
     assert superior(strategy)
     return 'tests pass'
 
