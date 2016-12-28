@@ -49,8 +49,17 @@ def Pwin2(state):
 
 @memo
 def Pwin3(me, you, pending):
-   ## your code here
-   
+    ## your code here
+    if me + pending >= goal:
+        return 1
+    elif you >= goal:
+        return 0
+    else:
+        p = (1 - Pwin3(you, me + 1, 0)
+                + sum(Pwin3(me, you, pending + d) for d in (2, 3, 4, 5, 6))) / 6.
+        return p if pending == 0 else max(p, 1 - Pwin3(you, me + pending, 0))
+        
+    
 def test():
     epsilon = 0.0001 # used to make sure that floating point errors don't cause test() to fail
     assert goal == 40
@@ -58,6 +67,7 @@ def test():
     assert Pwin2((0, 42, 25, 0)) == 1
     assert Pwin2((1, 12, 43, 0)) == 0
     assert Pwin2((0, 34, 42, 1)) == 0
+    print 67, Pwin2((0, 25, 32, 8))
     assert abs(Pwin2((0, 25, 32, 8)) - 0.736357188272) <= epsilon
     assert abs(Pwin2((0, 19, 35, 4)) - 0.493173612834) <= epsilon
     return 'tests pass'
