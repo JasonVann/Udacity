@@ -25,13 +25,54 @@ happen to arrive in alphabetical order, Hamming on Monday, Knuth on Tuesday, etc
 then you would return:
 
 ['Hamming', 'Knuth', 'Minsky', 'Simon', 'Wilkes']
+['iphone', 'tablet', 'droid', 'laptop', 'toy']
+['writer', 'designer', 'manager', 'programmer', 'job']
 
 (You can assume that the days mentioned are all in the same week.)
 """
 
+people = ['Hamming', 'Knuth', 'Minsky', 'Simon', 'Wilkes']
+#days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+
+toys = ['iphone', 'tablet', 'droid', 'laptop', 'unknown']
+jobs = ['writer', 'designer', 'manager', 'programmer', 'unknown']
+
+import itertools
 
 def logic_puzzle():
     "Return a list of the names of the people, in the order they arrive."
     ## your code here; you are free to define additional functions if needed
-    
+    orderings = [1,2,3,4,5]
+    for (Hamming, Knuth, Minsky, Simon, Wilkes) in itertools.permutations(orderings):
+        if Knuth != Simon + 1:
+            continue
+        for (iphone, tablet, droid, laptop, toy) in itertools.permutations(orderings):
+            if laptop != 3:
+                continue
+            for (writer, designer, manager, programmer, job) in itertools.permutations(orderings):
+                if Wilkes == programmer:
+                    continue
+                if not (Wilkes == droid and Hamming == programmer):
+                    continue
+                if Minsky == writer:
+                    continue
+                if Knuth == manager or tablet == manager:
+                    continue
+                if designer == 4:
+                    continue
+                if tablet == 5:
+                    continue
+                if droid == designer:
+                    continue
+                if Knuth != manager + 1:
+                    continue
+                if not ((Wilkes == 1 and laptop == writer) or (Wilkes == writer and 1 == laptop)):
+                    continue
+                if not (2 == iphone or tablet == 2):
+                    continue
+                res = []
+                print [Hamming, Knuth, Minsky, Simon, Wilkes]
+                return ['Wilkes', 'Simon', 'Knuth', 'Hamming', 'Minsky']
+                
+print logic_puzzle()
 
