@@ -8,9 +8,37 @@
 def boggle_words(board, minlength=3):
     "Find all the words on this Boggle board; return as a set of words."
     # your code here
+    n = size(board)
+    results = set()
+    for (i, s) in enumerate(board):
+        if s == BORDER:
+            continue
+        find(board, i, '', [], results, minlength)
+    #print 17, results
+    return results
+    
+def find(board, i, pre, path, results, minlength):
+    pre = pre + board[i]
+    path += [i]
+    if pre in WORDS and len(pre) >= minlength:
+        #print 25, pre, results
+        results.add(pre)
+        
+    if pre not in PREFIXES:
+        return
+    n = size(board)
+    for a in neighbors(i, n):
+        if a in path:
+            #print 35, pre, path, board[a], pre + board[a]
+            #pass
+            continue
+        find(board, a, pre[:], path[:], results, minlength)
     
 def test():
     b = Board('XXXX TEST XXXX XXXX')
+    
+    print 15, b, size(b)
+
     assert b == '|||||||XXXX||TEST||XXXX||XXXX|||||||'
     assert display(b) == """
 ||||||
@@ -46,6 +74,7 @@ def Board(text):
 
 def size(board): return int(len(board)**0.5)
 
+
 def neighbors(i, N):
     return (i-N-1, i-N, i-N+1, i-1, i+1, i+N-1, i+N, i+N+1)
 
@@ -74,6 +103,10 @@ def readwordlist(filename):
 
 WORDS, PREFIXES = readwordlist('words4k.txt')
 
+print 109, 'TEXT' in WORDS
+
+temp = list(PREFIXES)
+print 86, sorted(temp, key = len)[:30]
 print test()
 
 
