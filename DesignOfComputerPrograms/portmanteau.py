@@ -51,9 +51,57 @@ input words. But you could implement a method that is efficient with a
 larger list of words.
 """
 
+def cal_score(state):
+    (start, mid, end) = state
+    n = sum(len(x) for x in state)
+    score = n - abs(n/4.0- len(start)) - abs(len(mid) - n/2.) - abs(n/4. - len(end))
+    return score
+    
+state = ('adole', 'scent', 'ed')
+state = ('armaged', 'don', 'ald') # 6
+#state = ('ph', 'arma', 'geddon') # 6
+print 61, cal_score(state)
+
+import itertools
+
+def break_words(a, b):
+    if b in a or a in b:
+        return None
+    n = len(a)
+    res = None
+    for j in range(1, n, 1):
+        if a[n - j:] == b[:j]:
+            res = j
+            j += 1
+    if res == None:
+        return
+    state = (a[:n-res], a[n-res:], b[res:])
+    return state
+    
+#print 79, break_words('adolescent', 'scented')
+print 79, break_words('pharma', 'armageddon')
+
+state = ('armageddon', 'pharma', 'geddon') # 11
+
 def natalie(words):
     "Find the best Portmanteau word formed from any two of the list of words."
-
+    cands = itertools.permutations(words, 2)
+    best = 0
+    res = None
+    for (a, b) in cands:
+        if a == b:
+            continue
+        #print 71, a, b
+        state = break_words(a, b)
+        if state is None:
+            continue
+        score = cal_score(state)
+        if score > best:
+            best = score
+            res = state
+    #print 97, res
+    return None if res is None else ''.join(list(res))
+    
 def test_natalie():
     "Some test cases for natalie"
     assert natalie(['adolescent', 'scented', 'centennial', 'always', 'ado']) in ('adolescented','adolescentennial')
@@ -75,8 +123,77 @@ def test_natalie():
     assert natalie([]) == None
     return 'tests pass'
 
+def test_natalie():
+    "Some test cases for natalie"
+    assert (natalie(['armageddon', 'pharma', 'karma', 'donald', 'donut'])
+            == 'pharmageddon')
+            
+    assert (natalie(['eskimo', 'escort', 'kimchee', 'kimono', 'cheese'])
+            == 'eskimono')
+    assert (natalie(['kimono', 'kimchee', 'cheese', 'serious', 'us', 'usage'])
+            == 'kimcheese')
+    assert (natalie(['circus', 'elephant', 'lion', 'opera', 'phantom'])
+            == 'elephantom')
+    assert (natalie(['adolescent', 'scented', 'centennial', 'always',
+                    'ado', 'centipede'])
+            in ( 'adolescented', 'adolescentennial', 'adolescentipede'))
+    assert (natalie(['programmer', 'coder', 'partying', 'merrymaking'])
+            == 'programmerrymaking')
+    assert (natalie(['int', 'intimate', 'hinter', 'hint', 'winter'])
+            == 'hintimate')
+    assert (natalie(['morass', 'moral', 'assassination'])
+            == 'morassassination')
+    assert (natalie(['entrepreneur', 'academic', 'doctor',
+                     'neuropsychologist', 'neurotoxin', 'scientist', 'gist'])
+            in ('entrepreneuropsychologist', 'entrepreneurotoxin'))
+    assert (natalie(['perspicacity', 'cityslicker', 'capability', 'capable'])
+            == 'perspicacityslicker')
+    assert (natalie(['backfire', 'fireproof', 'backflow', 'flowchart',
+                     'background', 'groundhog'])
+            == 'backgroundhog')
+    assert (natalie(['streaker', 'nudist', 'hippie', 'protestor',
+                     'disturbance', 'cops'])
+            == 'nudisturbance')
+    assert (natalie(['night', 'day']) == None)
+    assert (natalie(['dog', 'dogs']) == None)
+    assert (natalie(['test']) == None)
+    assert (natalie(['']) ==  None)
+    assert (natalie(['ABC', '123']) == None)
+    assert (natalie([]) == None)
+    assert (natalie(['pedestrian', 'pedigree', 'green', 'greenery'])
+            == 'pedigreenery')
+    
+    
+    
+    assert (natalie(['lagniappe', 'appendectomy', 'append', 'lapin'])
+            == 'lagniappendectomy')
+    assert (natalie(['angler', 'fisherman', 'boomerang', 'frisbee', 'rangler',
+                     'ranger', 'rangefinder'])
+            in ('boomerangler', 'boomerangefinder'))
+    assert (natalie(['freud', 'raelian', 'dianetics', 'jonestown', 'moonies'])
+            == 'freudianetics')
+    assert (natalie(['atheist', 'math', 'athlete', 'psychopath'])
+            in ('psychopatheist', 'psychopathlete'))
+    assert (natalie(['hippo', 'hippodrome', 'potato', 'dromedary'])
+            == 'hippodromedary')
+    
+    assert (natalie(['taxi', 'taxicab', 'cabinet', 'cabin',
+                     'cabriolet', 'axe'])
+            in ('taxicabinet', 'taxicabriolet'))
+    
+    assert (natalie(['pocketbook', 'bookmark', 'bookkeeper', 'goalkeeper'])
+            in ('pocketbookmark', 'pocketbookkeeper'))
+    assert (natalie(['athlete', 'psychopath', 'athletic', 'axmurderer'])
+            in ('psychopathlete', 'psychopathletic'))
+    assert (natalie(['info', 'foibles', 'follicles'])
+            == 'infoibles')
+    assert (natalie(['moribund', 'bundlers', 'bundt'])
+            == 'moribundlers')
 
-print test_natalie()
+import time
+
+start = time.time()
+print test_natalie(), time.time() - start
 
 
 
