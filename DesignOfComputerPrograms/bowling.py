@@ -37,8 +37,41 @@ def bowling(balls):
     "Compute the total score for a player's game of bowling."
     ## bowling([int, ...]) -> int
     ## your code here
-
-
+    score = 0
+    n = len(balls)
+    frame = 1
+    ball1 = True
+    for i in range(n):
+        if frame == 11:
+            break
+        cur = balls[i]
+        if ball1:
+            if cur == 10:
+                # Strike
+                score += cur + balls[i+1] + balls[i+2]
+                '''
+                if i < n - 1:
+                    score += balls[i+1] 
+                if i < n - 2:
+                    score += balls[i+2]
+                '''
+                frame += 1
+            else:
+                ball1 = False
+                score += cur
+        else:
+            if balls[i-1] + cur == 10:
+                # Spare
+                score += cur + balls[i+1]
+                ball1 = True
+                frame += 1
+            else:
+                score += cur
+                ball1 = True
+                frame += 1
+    #print 66, balls, score
+    return score
+                
 def test_bowling():
     assert   0 == bowling([0] * 20)
     assert  20 == bowling([1] * 20)
