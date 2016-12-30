@@ -54,12 +54,62 @@ we must choose a double for the last dart, but for the others I prefer the
 easiest targets first: 'S' is easiest, then 'T', then 'D'.
 """
 
+import itertools
+points = {}
+
+
+def init(points):
+    base = range(1, 21)
+    S = 1
+    D = 2
+    T = 3
+    multi = [S,D,T]
+    cand = itertools.product(base, multi)
+    cand = list(cand)
+    #print cand
+    for (a, b) in cand:
+        S = [0, 'S', 'D', 'T'][b]
+        points[a*b] = S + str(a)
+    
+    points[25] = 'SB'
+    points[40] = 'D20'
+    points[50] = 'DB'
+
+init(points)
+
+#print points
 
 def double_out(total):
     """Return a shortest possible list of targets that add to total,
     where the length <= 3 and the final element is a double.
     If there is no solution, return None."""
     # your code here
+    if total < 20 or total > 180:
+        return None
+    results = []
+    search(total, [], results)
+    #print 73, results
+    res = []
+    res = [a for a in results if a[-1][0] == 'D']
+    if len(res) == 0:
+        return None
+    res = sorted(res, key = len)
+    #print 79, results, res
+    return res[0]
+    
+def search(left, path, results):
+    if len(path) >= 3:
+        return
+    else:
+        for k in points.keys():
+            if k == left:
+                path += [points[left]]
+                #path.sort()
+                results += [path]
+            elif k < left:
+                search(left - k, path + [points[k]], results)
+           
+print 86, test_darts()
 
 """
 It is easy enough to say "170 points? Easy! Just hit T20, T20, DB."
@@ -119,15 +169,155 @@ is large; also, it is always possible to miss a double, and thus there is
 no guarantee that the game will end in a finite number of moves.
 """
 
+order = '20 1 18 4 13 6 10 15 2 17 3 19 7 16 8 11 14 9 12 5'
+order = order.split()
+
 
 def outcome(target, miss):
     "Return a probability distribution of [(target, probability)] pairs."
     #your code here
+    ring_dic = {}
+    section_dic = {}
+    ring_outcome(ring_dic, target, miss)
+    section_outcome(section_dic, target, miss)
+    
+    #print 181, ring_dic
+    #print 182, section_dic
+    dic = {}
+    if target == 'SB':
+        extra = ring_dic['S'] * section_dic['B']/20.
+    elif target == 'DB':
+        extra = ring_dic['S'] * section_dic['B']/20.
+    else:
+        extra = 0
+    #print 193, extra
+    for k1, v1 in ring_dic.items():
+        for k2, v2 in section_dic.items():
+            if k1[-1] == 'B':
+                dic[k1] = v1 * section_dic['B']
+            elif k2 == 'B':
+                continue
+            else:
+                if extra == 0:
+                    dic[k1+k2] = v1*v2 
+                else:
+                    dic[k1+k2] = v2 + extra
+                        
+    #print 190, dic
+    return dic
+    
+def section_outcome(dic, target, miss):
+    "Return a probability distribution of [(target, probability)] pairs."
+    #your code here
+    p = miss
+    try:
+        #print 180, target[1:]
+        num = target[1:]
+        idx = order.index(num)
+        #print 183, num, idx
+        if idx == 0:
+            pre = '5'
+            next = '1'
+        else:
+            pre = str(order[idx-1])
+        if idx == 19:
+            next = '20'
+        else:
+            next = str(order[idx+1])
+        #print 194, pre, next
+    except:
+        #print 192, target
+        num = None
+    if target[0] == 'T':
+        #p = miss
+        dic[num] = 1 - p
+        dic[pre] = p/2.
+        dic[next] = p/2.
+    elif target[0] == 'D' and target[1] != 'B':
+        #p = miss
+        #print 238, target
+        dic[pre] = p/2.
+        dic[next] = p/2.
+        dic[num] = 1 - p
+        
+    elif target[0] == 'S' and target[1] != 'B':
+        #p = miss/5.
+        dic[num] = 1 - p
+        dic[pre] = p/2.
+        dic[next] = p/2.
+        #print 225, dic
+    else:
+        if target[1] != 'B':
+            print 250, target
+        if target == 'SB':
+            p = miss
+        else:
+            p = 1 * miss
+        dic['B'] = 1 - p
+        for o in order:
+            dic[o] = p/20
+    #print 233, dic
+    return dic
+    
+def ring_outcome(dic, target, miss):
+    if target[0] == 'T':
+        p = miss
+        dic['S'] = p
+        dic['T'] = 1 - p
+    elif target[0] == 'D' and target[1] != 'B':
+        p = miss
+        dic['S'] = p/2.
+        dic['OFF'] = p/2.
+        dic['D'] = 1 - p
+    elif target[0] == 'S' and target[1] != 'B':
+        p = miss/5.
+        dic['S'] = 1 - p
+        dic['D'] = p/2.
+        dic['T'] = p/2.
+    elif target == 'SB':
+        p = miss
+        dic['DB'] = p/4.
+        dic['SB'] = 1 - p
+        dic['S'] = 3*p/4.
+    elif target == 'DB':
+        p = 3. * miss
+        p = min(1, p)
+        dic['S'] = 2. * miss
+        dic['SB'] = miss
+        dic['DB'] = 1 - p
+        
+    return dic
+    
+#t = outcome('S20', .2)
+#outcome('SB', .2)
+#outcome('DB', .2)
+
+
+def cal_expect(dic):
+    res = 0
+    for k, v in dic.items():
+        if k == 'DB':
+            score = 50
+        elif k == 'SB':
+            score = 25
+        elif 'OFF' in k:
+            score = 0
+        else:
+            #print 304, k, v
+            score = int(k[1:]) * [0,'S', 'D', 'T'].index(k[0])
+        res += score * v
+    return res
+    
+#print 304, cal_expect(t)
+
 
 def best_target(miss):
     "Return the target that maximizes the expected score."
     #your code here
+    return max(points.values(), key = lambda k: cal_expect(outcome(k, miss)))
     
+print 312, best_target(0.2)
+
 def same_outcome(dict1, dict2):
     "Two states are the same if all corresponding sets of locs are the same."
     return all(abs(dict1.get(key, 0) - dict2.get(key, 0)) <= 0.0001
