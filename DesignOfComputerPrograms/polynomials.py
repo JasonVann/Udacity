@@ -58,27 +58,90 @@ def poly(coefs):
     '30 * x**2 + 20 * x + 10'.  Also store the coefs on the .coefs attribute of
     the function, and the str of the formula on the .__name__ attribute.'"""
     # your code here (I won't repeat "your code here"; there's one for each function)
+    def f(x):
+        f.coefs = coefs
+        temp = res.replace('x', str(x))
+        return eval(temp)
+        
+    i = len(coefs) - 1
+    res = ''
+    co = coefs[::-1]
+    for j in co:
+        if i == 0:
+            pre = ''
+        elif i == 1:
+            pre = 'x'
+        else:
+            pre = 'x**' + str(i)
+            
+        if j == 1:
+            if len(pre) > 0:
+                res += pre
+        elif j == -1:
+            res += ' -' + pre
+        elif j < 0:
+            #print 82, j, pre, res
+            res += ' ' + str(j)
+            if len(pre) > 0:
+                res += ' * ' + pre
+        elif j > 0:
+            #print 87, j, pre, res
+            res += ' + ' + str(j)
+            if len(pre) > 0:
+                res += ' * ' + pre
+            
+        i -= 1
+    #print 89, res
+    if res[:2] == ' +':
+        res = res.replace(res[:2], '', 1)
+        #print 92, res
+    f.__name__ = res
+    print 99, coefs
+    
+    f(0)
+    return f
+  
 
+p1 = poly((10, 20, 30))
+for (n, c) in enumerate(p1.coefs): 
+    print 99, n, c
+    
+print 67, p1(0), p1.__name__
+print 102, p1(1), p1.coefs
 
+p3 = poly((0, 0, 0, 1))
+print 107, p3.__name__, p3.coefs
+    
+    
 def test_poly():
     global p1, p2, p3, p4, p5, p9 # global to ease debugging in an interactive session
 
     p1 = poly((10, 20, 30))
-    assert p1(0) == 10
-    for x in (1, 2, 3, 4, 5, 1234.5):
-        assert p1(x) == 30 * x**2 + 20 * x + 10
     assert same_name(p1.__name__, '30 * x**2 + 20 * x + 10')
 
+    assert p1(0) == 10
+    for x in (1, 2, 3, 4, 5, 1234.5):
+        print 114, p1(x)
+        assert p1(x) == 30 * x**2 + 20 * x + 10
+    
+    '''
     assert is_poly(p1)
     assert not is_poly(abs) and not is_poly(42) and not is_poly('cracker')
+    '''
 
     p3 = poly((0, 0, 0, 1))
     assert p3.__name__ == 'x**3'
-    p9 = mul(p3, mul(p3, p3))
-    assert p9(2) == 512
+    
+    print 129, p3.coefs
+    
     p4 =  add(p1, p3)
     assert same_name(p4.__name__, 'x**3 + 30 * x**2 + 20 * x + 10')
 
+
+    p9 = mul(p3, mul(p3, p3))
+    print 129, p9
+    assert p9(2) == 512
+    
     assert same_name(poly((1, 1)).__name__, 'x + 1')
     assert same_name(power(poly((1, 1)), 10).__name__,
             'x**10 + 10 * x**9 + 45 * x**8 + 120 * x**7 + 210 * x**6 + 252 * x**5 + 210' +
@@ -113,19 +176,47 @@ def is_poly(x):
 
 def add(p1, p2):
     "Return a new polynomial which is the sum of polynomials p1 and p2."
-
+    c1 = list(p1.coefs)
+    #print 172, c1
+    c2 = list(p2.coefs)
+    if len(c1) < len(c2):
+        c1, c2 = c2, c1
+    c2 += [0] * (len(c1) - len(c2))
+    c3 = [c1[i] + c2[i] for i in range(len(c1))]
+    #print 183, c3
+    return poly(tuple(c3))
 
 def sub(p1, p2):
     "Return a new polynomial which is the difference of polynomials p1 and p2."
-
+    c1 = list(p1.coefs)
+    #print 172, c1
+    c2 = list(p2.coefs)
+    if len(c1) < len(c2):
+        c1, c2 = c2, c1
+    c2 += [0] * (len(c1) - len(c2))
+    c3 = [c1[i] - c2[i] for i in range(len(c1))]
+    #print 183, c3
+    return poly(tuple(c3))
 
 def mul(p1, p2):
     "Return a new polynomial which is the product of polynomials p1 and p2."
-
+    c1 = list(p1.coefs)
+    #print 172, c1
+    c2 = list(p2.coefs)
+    if len(c1) < len(c2):
+        c1, c2 = c2, c1
+    c2 += [0] * (len(c1) - len(c2))
+    c3 = [c1[i] * c2[i] for i in range(len(c1))]
+    print 207, c3
+    return poly(tuple(c3))
 
 def power(p, n):
     "Return a new polynomial which is p to the nth power (n a non-negative integer)."
-
+    res = p
+    for i in range(n):
+        res = mul(p, res)
+        
+    return res 
 
 """
 If your calculus is rusty (or non-existant), here is a refresher:
@@ -176,4 +267,5 @@ def test_poly2():
     assert p1(100) == newp1(100)
     assert same_name(p1.__name__,newp1.__name__)
 
+test_poly()
 
