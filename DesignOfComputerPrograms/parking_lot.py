@@ -1,47 +1,47 @@
 """
 UNIT 4: Search
 
-Your task is to maneuver a car in a crowded parking lot. This is a kind of 
-puzzle, which can be represented with a diagram like this: 
+Your task is to maneuver a car in a crowded parking lot. This is a kind of
+puzzle, which can be represented with a diagram like this:
 
-| | | | | | | |  
-| G G . . . Y |  
-| P . . B . Y | 
-| P * * B . Y @ 
-| P . . B . . |  
-| O . . . A A |  
-| O . S S S . |  
-| | | | | | | | 
+| | | | | | | |
+| G G . . . Y |
+| P . . B . Y |
+| P * * B . Y @
+| P . . B . . |
+| O . . . A A |
+| O . S S S . |
+| | | | | | | |
 
 A '|' represents a wall around the parking lot, a '.' represents an empty square,
 and a letter or asterisk represents a car.  '@' marks a goal square.
 Note that there are long (3 spot) and short (2 spot) cars.
 Your task is to get the car that is represented by '**' out of the parking lot
-(on to a goal square).  Cars can move only in the direction they are pointing.  
+(on to a goal square).  Cars can move only in the direction they are pointing.
 In this diagram, the cars GG, AA, SSS, and ** are pointed right-left,
 so they can move any number of squares right or left, as long as they don't
 bump into another car or wall.  In this diagram, GG could move 1, 2, or 3 spots
-to the right; AA could move 1, 2, or 3 spots to the left, and ** cannot move 
-at all. In the up-down direction, BBB can move one up or down, YYY can move 
+to the right; AA could move 1, 2, or 3 spots to the left, and ** cannot move
+at all. In the up-down direction, BBB can move one up or down, YYY can move
 one down, and PPP and OO cannot move.
 
-You should solve this puzzle (and ones like it) using search.  You will be 
+You should solve this puzzle (and ones like it) using search.  You will be
 given an initial state like this diagram and a goal location for the ** car;
 in this puzzle the goal is the '.' empty spot in the wall on the right side.
 You should return a path -- an alternation of states and actions -- that leads
 to a state where the car overlaps the goal.
 
-An action is a move by one car in one direction (by any number of spaces).  
+An action is a move by one car in one direction (by any number of spaces).
 For example, here is a successor state where the AA car moves 3 to the left:
 
-| | | | | | | |  
-| G G . . . Y |  
-| P . . B . Y | 
-| P * * B . Y @ 
-| P . . B . . |  
-| O A A . . . |  
-| O . . . . . |  
-| | | | | | | | 
+| | | | | | | |
+| G G . . . Y |
+| P . . B . Y |
+| P * * B . Y @
+| P . . B . . |
+| O A A . . . |
+| O . . . . . |
+| | | | | | | |
 
 And then after BBB moves 2 down and YYY moves 3 down, we can solve the puzzle
 by moving ** 4 spaces to the right:
@@ -62,7 +62,7 @@ You will write the function
 where 'start' is the initial state of the puzzle and 'N' is the length of a side
 of the square that encloses the pieces (including the walls, so N=8 here).
 
-We will represent the grid with integer indexes. Here we see the 
+We will represent the grid with integer indexes. Here we see the
 non-wall index numbers (with the goal at index 31):
 
  |  |  |  |  |  |  |  |
@@ -81,64 +81,162 @@ initial state for the problem above in this format:
 """
 
 puzzle1 = (
- ('@', (31,)),
- ('*', (26, 27)), 
- ('G', (9, 10)),
- ('Y', (14, 22, 30)), 
- ('P', (17, 25, 33)), 
- ('O', (41, 49)), 
- ('B', (20, 28, 36)), 
- ('A', (45, 46)), 
- ('|', (0, 1, 2, 3, 4, 5, 6, 7, 8, 15, 16, 23, 24, 32, 39,
-        40, 47, 48, 55, 56, 57, 58, 59, 60, 61, 62, 63)))
+    ('@', (31,)),
+    ('*', (26, 27)),
+    ('G', (9, 10)),
+    ('Y', (14, 22, 30)),
+    ('P', (17, 25, 33)),
+    ('O', (41, 49)),
+    ('B', (20, 28, 36)),
+    ('A', (45, 46)),
+    ('|', (0, 1, 2, 3, 4, 5, 6, 7, 8, 15, 16, 23, 24, 32, 39,
+           40, 47, 48, 55, 56, 57, 58, 59, 60, 61, 62, 63)))
 
 # A solution to this puzzle is as follows:
 
 #     path = solve_parking_puzzle(puzzle1, N=8)
 #     path_actions(path) == [('A', -3), ('B', 16), ('Y', 24), ('*', 4)]
 
-# That is, move car 'A' 3 spaces left, then 'B' 2 down, then 'Y' 3 down, 
+# That is, move car 'A' 3 spaces left, then 'B' 2 down, then 'Y' 3 down,
 # and finally '*' moves 4 spaces right to the goal.
 
 # Your task is to define solve_parking_puzzle:
 
 N = 8
 
+
+def range_of_motion(state, car, dots):
+    (a, b) = car
+    is_ver = False
+    incr = 1
+    if b[1] - b[0] == N:
+        is_ver = True
+        # min_l = b[0] / N + N # bypass the border
+        # max_r = l + N ** 2 - 3*N
+        l = b[0]
+        r = b[-1]
+        incr = N
+    else:
+        # min_l = b[0] % N * N + 1
+        # max_r = l + N - 1
+        l = b[0]
+        r = b[-1]
+    while l - incr in dots or l - incr == goal:
+        l -= incr
+    while r + incr in dots or r + incr == goal:
+        r += incr
+    return (l, r)
+
+
+def build_dots(state):
+    dots = range(N * N)
+    for (a, b) in state:
+        for j in b:
+            dots.remove(j)
+    return set(dots)
+
+
 def solve_parking_puzzle(start, N=N):
-    """Solve the puzzle described by the starting position (a tuple 
+    """Solve the puzzle described by the starting position (a tuple
     of (object, locations) pairs).  Return a path of [state, action, ...]
     alternating items; an action is a pair (object, distance_moved),
     such as ('B', 16) to move 'B' two squares down on the N=8 grid."""
-    
+
+    def successors(state):
+        dic = {}
+        dots = build_dots(state)
+        for (a, b) in state:
+            if a == '@' or a == '|':
+                continue
+            incr = 1
+            if b[1] - b[0] == N:
+                incr = N
+            (l, r) = range_of_motion(state, (a, b), dots)
+            #if l != b[0]:
+            for i in range(l, b[0], incr):
+                    new_state = list(state)
+                    new_state.remove((a, b))
+                    b1 = list(b)
+                    #b1[0] = i
+                    b1 = [b2 + i - b[0] for b2 in b1]
+                    new_state.append((a, tuple(b1)))
+                    new_state.sort()
+                    new_state = tuple(new_state)
+                    dic[new_state] = (a, i - b[0])
+            #if r != b[-1]:
+            for j in range(r, b[-1], -incr):
+                    new_state = list(state)
+                    new_state.remove((a, b))
+                    b1 = list(b)
+                    #b1[-1] = j
+                    b1 = [b2 + j - b[-1] for b2 in b1]
+                    new_state.append((a, tuple(b1)))
+                    new_state.sort()
+                    new_state = tuple(new_state)
+
+                    dic[new_state] = (a, j - b[-1])
+        return dic
+
+    start = list(start)
+    start.sort()
+    start = tuple(start)
+    path = shortest_path_search(start, successors, is_goal)
+    return path
+
+
 # But it would also be nice to have a simpler format to describe puzzles,
 # and a way to visualize states.
 # You will do that by defining the following two functions:
 
 def locs(start, n, incr=1):
     "Return a tuple of n locations, starting at start and incrementing by incr."
+    res = [start + incr * i for i in range(n)]
+    # print 120, res
+    return tuple(res)
+
+
+# print 121, locs(26, 2)
+# print 124, locs(14, 3, N)
+
+goal = 0
 
 
 def grid(cars, N=N):
     """Return a tuple of (object, locations) pairs -- the format expected for
-    this puzzle.  This function includes a wall pair, ('|', (0, ...)) to 
-    indicate there are walls all around the NxN grid, except at the goal 
+    this puzzle.  This function includes a wall pair, ('|', (0, ...)) to
+    indicate there are walls all around the NxN grid, except at the goal
     location, which is the middle of the right-hand wall; there is a goal
     pair, like ('@', (31,)), to indicate this. The variable 'cars'  is a
     tuple of pairs like ('*', (26, 27)). The return result is a big tuple
     of the 'cars' pairs along with the walls and goal pairs."""
+    global goal
+    res = []
+    res += list(cars)
+    border = range(N)
+    border += range(N ** 2 - N, N ** 2)
+    border += [N * i for i in range(N)]
+    border += [N * i - 1 for i in range(1, N + 1)]
+    goal = (N ** 2 - 1) / 2
+    border.remove(goal)
+    # print 138, border
+    res += [('|', tuple(set(border)))]
+    res += [('@', (goal,))]
+    print 140, res
+    return tuple(res)
 
 
 def show(state, N=N):
     "Print a representation of a state as an NxN grid."
     # Initialize and fill in the board.
-    board = ['.'] * N**2
+    board = ['.'] * N ** 2
     for (c, squares) in state:
         for s in squares:
             board[s] = c
     # Now print it out
-    for i,s in enumerate(board):
+    for i, s in enumerate(board):
         print s,
         if i % N == N - 1: print
+
 
 # Here we see the grid and locs functions in use:
 
@@ -150,6 +248,9 @@ puzzle1 = grid((
     ('O', locs(41, 2, N)),
     ('B', locs(20, 3, N)),
     ('A', locs(45, 2))))
+
+dots = build_dots(puzzle1)
+print 214, range_of_motion(puzzle1, ('B', locs(20, 3, N)), dots)
 
 puzzle2 = grid((
     ('*', locs(26, 2)),
@@ -169,28 +270,43 @@ puzzle3 = grid((
 # Here are the shortest_path_search and path_actions functions from the unit.
 # You may use these if you want, but you don't have to.
 
+def is_goal(state):
+    global goal
+    for (a, b) in state:
+        if a == '*':
+            return goal in b
+
+
 def shortest_path_search(start, successors, is_goal):
     """Find the shortest path from start state to a state
     such that is_goal(state) is true."""
     if is_goal(start):
         return [start]
-    explored = set() # set of states we have visited
-    frontier = [ [start] ] # ordered list of paths we have blazed
+    explored = set()  # set of states we have visited
+    frontier = [[start]]  # ordered list of paths we have blazed
     while frontier:
         path = frontier.pop(0)
         s = path[-1]
         for (state, action) in successors(s).items():
             if state not in explored:
+                #print 269, state
+                #print 270, action
                 explored.add(state)
                 path2 = path + [action, state]
                 if is_goal(state):
+                    print 272, path2
                     return path2
                 else:
-                    frontier.append(path2)
+                    frontier.append(path2[:])
     return []
+
 
 def path_actions(path):
     "Return a list of actions in this path."
     return path[1::2]
 
+
+path = solve_parking_puzzle(puzzle1, N)
+print 280, path
+print 281, path_actions(path)
 
