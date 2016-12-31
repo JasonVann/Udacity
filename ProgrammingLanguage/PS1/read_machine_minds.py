@@ -54,8 +54,23 @@ accepting2 = [2]
 
 def nfsmaccepts(current, edges, accepting, visited): 
         # write your code here 
+    if current in accepting:
+        return ""
+    for edge in edges:
+        if current in edge:
+            visited.append(current)
+            states = edges[edge]
+            for state in states:
+                #print 65, state, current, visited
+                if state not in visited:
+                    res = nfsmaccepts(state, edges, accepting, visited)
+                    #print 67, res, current, visited
+                    if res != None:
+                        #print 69, edge, res, current
+                        return edge[1] + res
+    return None
 
-        
+print 72, nfsmaccepts(1, edges, accepting, [])
 
 # This problem includes some test cases to help you tell if you are on
 # the right track. You may want to make your own additional tests as well.
