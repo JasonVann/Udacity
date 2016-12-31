@@ -46,8 +46,12 @@ import re
 # Fill in your answer here. 
 
 def addresses(haystack): 
-  # ...
-
+    res = []
+    res = re.findall('[A-Za-z]+@(?:[A-Za-z]+\.)+[A-Za-z]+', haystack)
+    print 52, res
+    res = [re.sub('NOSPAM', '', a) for a in res]
+    print 54, res
+    return res
 
 # We have provided a single test case for you. You will probably want to
 # write your own. 
