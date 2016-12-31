@@ -1,62 +1,250 @@
-# Email Addresses & Spam
+# JavaScript: Comments & Keywords
 #
-# In this assignment you will write Python code to to extract email
-# addresses from a string of text. To avoid unsolicited commercial email
-# (commonly known as "spam"), users sometimes add the text NOSPAM to an
-# other-wise legal email address, trusting that humans will be smart enough
-# to remove it but that machines will not. As we shall see, this provides
-# only relatively weak protection. 
+# In this exercise you will write token definition rules for all of the
+# tokens in our subset of JavaScript *except* IDENTIFIER, NUMBER and
+# STRING. In addition, you will handle // end of line comments
+# as well as /* delimited comments */. 
 #
-# For the purposes of this exercise, an email address consists of a
-# word, an '@', and a domain name. A word is a non-empty sequence
-# of upper- or lower-case letters. A domain name is a sequence of two or
-# more words, separated by periods. 
+# We will assume that JavaScript is case sensitive and that keywords like
+# 'if' and 'true' must be written in lowercase. There are 26 possible
+# tokens that you must handle. The 'tokens' variable below has been 
+# initialized below, listing each token's formal name (i.e., the value of
+# token.type). In addition, each token has its associated textual string
+# listed in a comment. For example, your lexer must convert && to a token
+# with token.type 'ANDAND' (unless the && is found inside a comment). 
 #
-# Example: wes@udacity.com
-# Example: username@domain.name
-# Example: me@this.is.a.very.long.domain.name
-#
-# If an email address has the text NOSPAM (uppercase only) anywhere in it,
-# you should remove all such text. Example: 
-# 'wes@NOSPAMudacity.com' -> 'wes@udacity.com' 
-# 'wesNOSPAM@udacity.com' -> 'wes@udacity.com' 
-#
-# You should write a procedure addresses() that accepts as input a string.
-# Your procedure should return a list of valid email addresses found within
-# that string -- each of which should have NOSPAM removed, if applicable. 
-#
-# Hint 1: Just as we can FIND a regular expression in a string using
-# re.findall(), we can also REPLACE or SUBSTITUTE a regular expression in a
-# string using re.sub(regexp, new_text, haystack). Example: 
-# 
-# print re.sub(r"[0-9]+", "NUMBER", "22 + 33 = 55") 
-# "NUMBER + NUMBER = NUMBER" 
-#
-# Hint 2: Don't forget to escape special characters. 
-#
-# Hint 3: You don't have to write very much code to complete this exercise:
-# you just have to put together a few concepts. It is possible to complete
-# this exercise without using a lexer at all. You may use any approach that
-# works. 
-
+# Hint 1: Use an exclusive state for /* comments */. You may want to define
+# t_comment_ignore and t_comment_error as well. 
 
 import ply.lex as lex
-import re 
 
-# Fill in your answer here. 
+def test_lexer(lexer,input_string):
+  lexer.input(input_string)
+  result = [ ] 
+  while True:
+    tok = lexer.token()
+    if not tok: break
+    result = result + [tok.type]
+  return result
+  
+tokens = (
+        'ANDAND',       # &&
+        'COMMA',        # ,
+        'DIVIDE',       # /
+        'ELSE',         # else
+        'EQUAL',        # =
+        'EQUALEQUAL',   # ==
+        'FALSE',        # false
+        'FUNCTION',     # function
+        'GE',           # >=
+        'GT',           # >
+#       'IDENTIFIER',   #### Not used in this problem.
+        'IF',           # if
+        'LBRACE',       # {
+        'LE',           # <=
+        'LPAREN',       # (
+        'LT',           # <
+        'MINUS',        # -
+        'NOT',          # !
+#       'NUMBER',       #### Not used in this problem.
+        'OROR',         # ||
+        'PLUS',         # +
+        'RBRACE',       # }
+        'RETURN',       # return
+        'RPAREN',       # )
+        'SEMICOLON',    # ;
+#       'STRING',       #### Not used in this problem. 
+        'TIMES',        # *
+        'TRUE',         # true
+        'VAR',          # var
+)
 
-def addresses(haystack): 
-  # ...
+#
+# Write your code here. 
+#
+
+states = (
+        ('jscomment', 'exclusive'),   # /*..*/
+        ('jscommentinline', 'exclusive')  # //
+)
 
 
-# We have provided a single test case for you. You will probably want to
-# write your own. 
-input1 = """louiseNOSPAMaston@germany.de (1814-1871) was an advocate for
-democracy. irmgardNOSPAMkeun@NOSPAMweimar.NOSPAMde (1905-1982) wrote about
-the early nazi era. rahelNOSPAMvarnhagen@berlin.de was honored with a 1994
-deutsche bundespost stamp. seti@home is not actually an email address."""
+def t_jscommentinline(t):
+    r'//[^\n]+'
+    t.lexer.begin('jscommentinline')
+    
+def t_jscommentinline_end(t):
+    r'\n'
+    t.lexer.lineno += 1
+    t.lexer.begin('INITIAL')
+    pass
 
-output1 = ['louiseaston@germany.de', 'irmgardkeun@weimar.de', 'rahelvarnhagen@berlin.de']
+def t_jscomment(t):
+    r'/\*'
+    t.lexer.begin('jscomment')
+    
+def t_jscomment_end(t):
+    r'\*/'
+    t.lexer.lineno += t.value.count('\n')
+    t.lexer.begin('INITIAL')
+    pass
 
-print addresses(input1) == output1
+def t_ANDAND(t):
+    r'&&'
+    return t
+   
+def t_COMMA(t):
+    r','
+    return t
+    
+def t_DIVIDE(t):
+    r'/'
+    return t
 
+def t_ELSE(t):
+    r'else'
+    return t
+    
+def t_EQUALEQUAL(t):
+    r'=='
+    return t
+    
+def t_EQUAL(t):
+    r'='
+    return t
+    
+def t_FALSE(t):
+    r'false'
+    return t
+    
+def t_FUNCTION(t):
+    r'function'
+    return t
+    
+def t_GE(t):
+    r'>='
+    return t
+
+def t_GT(t):
+    r'>'
+    return t
+    
+def t_IF(t):
+    r'if'
+    return t
+    
+def t_LBRACE(t):
+    r'{'
+    return t
+    
+def t_LE(t):
+    r'<='
+    return t
+    
+def t_LPAREN(t):
+    r'\('
+    return t
+    
+def t_LT(t):
+    r'<'
+    return t
+    
+def t_MINUS(t):
+    r'-'
+    return t
+    
+def t_NOT(t):
+    r'!'
+    return t
+    
+def t_OROR(t):
+    r'\|\|'
+    return t
+    
+def t_PLUS(t):
+    r'\+'
+    return t
+    
+def t_RBRACE(t):
+    r'}'
+    return t
+
+def t_RETURN(t):
+    r'return'
+    return t
+    
+def t_RPAREN(t):
+    r'\)'
+    return t
+    
+def t_SEMICOLON(t):
+    r';'
+    return t
+    
+def t_TIMES(t):
+    r'\*'
+    return t
+    
+def t_TRUE(t):
+    r'true'
+    return t
+    
+def t_VAR(t):
+    r'var'
+    return t
+    
+t_jscomment_ignore = ''
+
+t_jscommentinline_ignore = ''
+
+t_ignore = ' \t\v\r' # whitespace 
+
+def t_newline(t):
+    r'\n'
+    t.lexer.lineno += 1
+
+def t_error(t):
+        print "JavaScript Lexer: Illegal character " + t.value[0]
+        t.lexer.skip(1)
+
+def t_jscomment_error(t):
+    print 211, t
+    t.lexer.skip(1)
+
+def t_jscommentinline_error(t):
+    print 215, t
+    t.lexer.skip(1)
+
+# We have included two test cases to help you debug your lexer. You will
+# probably want to write some of your own. 
+
+lexer = lex.lex() 
+
+def test_lexer(input_string):
+  lexer.input(input_string)
+  result = [ ] 
+  while True:
+    tok = lexer.token()
+    if not tok: break
+    result = result + [tok.type]
+  return result
+
+input1 = """ - !  && () * , / ; { || } + < <= = == > >= else false function
+if return true var """
+
+output1 = ['MINUS', 'NOT', 'ANDAND', 'LPAREN', 'RPAREN', 'TIMES', 'COMMA',
+'DIVIDE', 'SEMICOLON', 'LBRACE', 'OROR', 'RBRACE', 'PLUS', 'LT', 'LE',
+'EQUAL', 'EQUALEQUAL', 'GT', 'GE', 'ELSE', 'FALSE', 'FUNCTION', 'IF',
+'RETURN', 'TRUE', 'VAR']
+
+print 218, test_lexer(input1) == output1
+
+input2 = """
+if // else mystery  
+=/*=*/= 
+true /* false 
+*/ return"""
+
+output2 = ['IF', 'EQUAL', 'EQUAL', 'TRUE', 'RETURN']
+
+print 232, test_lexer(input2) #== output2
