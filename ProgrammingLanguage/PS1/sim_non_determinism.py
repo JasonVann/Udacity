@@ -37,8 +37,18 @@ accepting = [2, 5]
 
 def nfsmsim(string, current, edges, accepting): 
 # fill in your code here 
-
-        
+    if string == "" and current in accepting:
+        return True
+    if len(string) >= 1:
+        if (current, string[0]) in edges:
+            dest = edges[(current, string[0])]
+            for d in dest:
+                temp = nfsmsim(string[1:], d, edges, accepting)
+                if temp:
+                    return True
+    return False
+       
+print 51, nfsmsim("aabc", 1, edges, accepting)
 
 # This problem includes some test cases to help you tell if you are on
 # the right track. You may want to make your own additional tests as well.
