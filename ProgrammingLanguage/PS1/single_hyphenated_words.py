@@ -28,7 +28,7 @@
 
 import re
 
-regexp = r"" # you should replace this with your regular expression
+regexp = r"(?:[a-z]+-)?[a-z]+" # you should replace this with your regular expression
 
 # This problem includes an example test case to help you tell if you are on
 # the right track. You may want to make your own additional tests as well.
@@ -43,6 +43,10 @@ test_case_output = ['the', 'wide-field', 'infrared', 'survey', 'explorer',
 'earth-orbiting', 'satellite', 'which', 'performed', 'an', 'all-sky',
 'astronomical', 'survey', 'be', 'careful', 'of', 'tricky', 'tricky',
 'hyphens', 'be', 'precise']
+
+print 47, re.findall(regexp, 'some spies practice counter-counter-intelligence.')
+
+print 49, re.findall('(?:[a-z]+-[a-z]+)|(?:[a-z]+)', 'some spies practice counter-counter-intelligence.')
 
 if re.findall(regexp, test_case_input) == test_case_output:
   print "Test case passed."
