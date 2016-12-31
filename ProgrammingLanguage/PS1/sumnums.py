@@ -15,7 +15,10 @@ import re
 
 def sumnums(sentence): 
 # write your code here
-
+    nums = re.findall('[0-9]+', sentence)
+    #print 19, nums
+    nums = [int(num) for num in nums]
+    return sum(nums)
          
 
 # This problem includes an example test case to help you tell if you are on
