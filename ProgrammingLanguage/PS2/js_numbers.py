@@ -51,6 +51,22 @@ tokens = (
 # Write your code here. 
 #
 
+def t_NUMBER(token):
+    r'-?[0-9]+\.?[0-9]*'
+    token.value = float(token.value)
+    return token
+
+def t_STRING(token):
+    r'".*"'
+    token.value = token.value[1:-1]
+    return token
+    
+def t_IDENTIFIER(token):
+    r'[a-zA-Z](?:_?[a-zA-Z])*'
+    
+    return token
+    
+    
 
 t_ignore                = ' \t\v\r' # whitespace 
 
@@ -79,10 +95,10 @@ def test_lexer(input_string):
 input1 = 'some_identifier -12.34 "a \\"escape\\" b"'
 output1 = ['IDENTIFIER', 'some_identifier', 'NUMBER', -12.34, 'STRING', 
 'a \\"escape\\" b']
-print test_lexer(input1) == output1
+print 96, test_lexer(input1), output1
 
 
 input2 = '-12x34' 
 output2 = ['NUMBER', -12.0, 'IDENTIFIER', 'x', 'NUMBER', 34.0]
-print test_lexer(input2) == output2
+print 101, test_lexer(input2), output2
 
