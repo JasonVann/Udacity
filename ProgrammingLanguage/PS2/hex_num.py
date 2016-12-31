@@ -69,13 +69,41 @@ tokens = ('NUM', 'ID')
 # Fill in your code here.
 ####
 
+def hex_to_dec(val):
+    val = val[2:] #0x19
+    n = len(str(val))
+    res = 0
+    for i in range(n):
+        temp = ord(val[i]) - ord('0')
+        if temp >= 49:
+            temp -= 39
+        res = res * 16 + temp
+    return res
+    
+print 83, hex_to_dec('0x2b4')
 
+def t_NUM_hex(token):
+    r'0x[0-9a-f]+'
+    #print 81, token, token.value
+    #token.value = int(token.value, 16)
+    token.value = hex_to_dec(token.value)
+    token.type = 'NUM'
+    
+    return token
+    
 def t_NUM_decimal(token):
   r'[0-9]+'
   token.value = int(token.value) # won't work on hex numbers!
   token.type = 'NUM'
   return token
 
+    
+def t_ID(token):
+    r'[a-zA-Z]+'
+    #token.value = token.value
+    token.type = 'ID'
+    return token
+    
 t_ignore = ' \t\v\r'
 
 def t_error(t):
@@ -115,3 +143,4 @@ print test_lexer(question4)
 
 question5 = "where is the 0xbeef"
 print test_lexer(question5)
+
