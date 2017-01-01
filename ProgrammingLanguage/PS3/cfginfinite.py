@@ -63,6 +63,31 @@
 
 def cfginfinite(grammar): 
     # Put your code here!
+    visited = []
+    for rule in grammar:
+        #state = rule[0]
+        #visited += [state]
+        #print 69, rule
+        if helper(rule, grammar, [], visited):
+            return True
+    return False
+        
+def helper(rule, grammar, master, visited):
+    if rule[0] in rule[1] and len(rule[1]) > 1:
+        return True
+    #print 77, rule, master, visited
+    if len(master) > 1 and rule[0] in master[1] and rule[1][0] == master[0] and rule != master:
+        return True
+    if rule in visited:
+        return False
+    visited += [rule]
+    for rule0 in grammar:
+        if rule0 == rule:
+            continue
+        #print 84, rule0, rule, master, visited
+        res = helper(rule0, grammar, tuple(rule), visited)
+        if res:
+            return True
     
     
     
@@ -77,19 +102,19 @@ grammar1 = [
       ("S", [ "S", "a" ]), # S -> S a
       ("S", [ "b", ]) , # S -> b 
       ] 
-print cfginfinite(grammar1) == True
+#print cfginfinite(grammar1) == True
 
 grammar2 = [ 
       ("S", [ "S", ]), # S -> S 
       ("S", [ "b", ]) , # S -> b 
       ] 
 
-print cfginfinite(grammar2) == False
+#print cfginfinite(grammar2) == False
 
 grammar3 = [ 
       ("S", [ "Q", ]), # S -> Q
       ("Q", [ "b", ]) , # Q -> b
-      ("Q", [ "R", "a" ]), # Q -> R a 
+      ("Q", [ "a", "R" ]), # Q -> R a 
       ("R", [ "Q"]), # R -> Q
       ] 
 
@@ -104,5 +129,5 @@ grammar4 = [  # Nobel Peace Prizes, 1990-1993
       ("P", [ "Mandela and de Klerk"]),
       ] 
 
-print cfginfinite(grammar4) == False
+#print cfginfinite(grammar4) == False
 
