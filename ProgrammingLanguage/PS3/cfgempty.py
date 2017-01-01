@@ -1,4 +1,4 @@
-eading Machine Minds 2
+# Reading Machine Minds 2
 #
 # We say that a finite state machine is "empty" if it accepts no strings.
 # Similarly, we say that a context-free grammar is "empty" if it accepts no
@@ -54,7 +54,31 @@ eading Machine Minds 2
 
 def cfgempty(grammar,symbol,visited):
     # Insert code here!
-                    
+    if is_done(grammar, symbol):
+        return [symbol]
+    if symbol in visited:
+        return None
+    visited += [symbol]
+    for rule in grammar:
+        if symbol == rule[0]:
+            #print 66, symbol, rule, visited
+            if rule[1] == []:
+                return []
+            res = [cfgempty(grammar, s, visited) for s in rule[1]]
+            #print 80, symbol, rule[1], res
+            res = [a for a in res if a != []]
+            if res == [] or all(res):
+                return reduce(lambda x, y: x+y, res)
+                #print 82, res
+            else:
+                #print 77, res
+                res = None
+    #print 84, res
+    return res
+    
+def is_done(grammar, symbol):
+    return not any([symbol == rule[0] for rule in grammar]) == True
+    
 # We have provided a few test cases for you. You will likely want to add
 # more of your own. 
 
@@ -63,7 +87,7 @@ grammar1 = [
       ("P", [ "S" ]) ,               
       ] 
                         
-print cfgempty(grammar1,"S",[]) == None 
+print 97, cfgempty(grammar1,"S",[]), None 
 
 grammar2 = [
       ("S", ["P", "a" ]),             
@@ -72,7 +96,7 @@ grammar2 = [
       ("Q", ["c", "d"]),              
       ] 
 
-print cfgempty(grammar2,"S",[]) == ['c', 'd', 'b']
+print 106, cfgempty(grammar2,"S",[]), ['c', 'd', 'b']
 
 
 grammar3 = [  # some Spanish provinces
@@ -86,5 +110,5 @@ grammar3 = [  # some Spanish provinces
         ("R", [ "R"]), 
         ]
 
-print cfgempty(grammar3,"S",[]) == ['Barcelona', 'Las Palmas', 'Madrid', 'Huelva']
+print 120, cfgempty(grammar3,"S",[]), ['Barcelona', 'Las Palmas', 'Madrid', 'Huelva']
 
