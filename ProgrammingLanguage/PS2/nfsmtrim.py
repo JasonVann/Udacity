@@ -48,14 +48,48 @@
 # new_accepting will be just like accepting, but including only those live
 # states. 
 
+def nfsmaccepts(current, edges, accepting, visited): 
+        # write your code here 
+    if current in accepting:
+        return ""
+    for edge in edges:
+        if current in edge:
+            visited.append(current)
+            states = edges[edge]
+            for state in states:
+                #print 65, state, current, visited
+                if state not in visited:
+                    res = nfsmaccepts(state, edges, accepting, visited)
+                    #print 67, res, current, visited
+                    if res != None:
+                        #print 69, edge, res, current
+                        #OK += (edge)
+                        return edge[1] + res
+    return None
+    
 def nfsmtrim(edges, accepting): 
     # Write your code here.
-        
+    new_edges = {}
+    visited = []
     
-
-        
-
-
+    for edge in edges:
+        for state in edges[edge]:
+            if nfsmaccepts(state, edges, accepting, visited) != None:
+                if edge not in new_edges:
+                    new_edges[edge] = []
+                new_edges[edge] += [state]
+                    
+    AC = []
+    for accept in accepting:
+        found = False
+        for v in new_edges.values():
+            if accept in v:
+                found = True
+        if found:
+           AC += [accept] 
+    #print 87, new_edges, accepting
+    return (new_edges, AC)
+    
 # We have included a few test cases, but you will definitely want to make
 # your own. 
 
@@ -65,18 +99,23 @@ edges1 = { (1,'a') : [1] ,
            (3,'b') : [4] ,
            (8,'z') : [9] , } 
 accepting1 = [ 1 ] 
+'''
+res = nfsmaccepts(2, edges1, accepting1, [])
+print 85, res
+
+'''
 (new_edges1, new_accepting1) = nfsmtrim(edges1,accepting1) 
 print new_edges1
 print new_edges1 == {(1, 'a'): [1]}
 print new_accepting1 == [1] 
 
 (new_edges2, new_accepting2) = nfsmtrim(edges1,[]) 
-print new_edges2 == {}
-print new_accepting2 == [] 
+print 119, new_edges2 == {}
+print 120, new_accepting2 == [] 
 
 (new_edges3, new_accepting3) = nfsmtrim(edges1,[3,6]) 
-print new_edges3 == {(1, 'a'): [1], (1, 'b'): [2], (2, 'b'): [3]}
-print new_accepting3 == [3]
+print 123, new_edges3 == {(1, 'a'): [1], (1, 'b'): [2], (2, 'b'): [3]}
+print 124, new_accepting3 == [3]
 
 edges4 = { (1,'a') : [1] ,
            (1,'b') : [2,5] ,
@@ -84,6 +123,12 @@ edges4 = { (1,'a') : [1] ,
            (3,'b') : [4] ,
            (3,'c') : [2,1,4] } 
 accepting4 = [ 2 ] 
+'''
+OK = []
+print 114, nfsmaccepts(1, edges4, accepting4, [])
+print 115, OK
+'''
+
 (new_edges4, new_accepting4) = nfsmtrim(edges4, accepting4) 
 print new_edges4 == { 
   (1, 'a'): [1],
