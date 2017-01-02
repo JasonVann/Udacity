@@ -60,49 +60,101 @@
 # can just keep enumerating new (utterance,derivation) pairs until you 
 # cannot find any that are not already enumerated. 
 
-def isambig(grammar, start, utterance): 
+def isambig(grammar, start, utterance):
     # Write your code here!
+    cands = [rule for rule in grammar if rule[0] == start]
+    res = []
+    visited = [[start]]
+    for rule in cands:
+        # print 93, rule, cands, utterance
+        path = [rule]
+        (path, done) = match(rule, grammar, utterance, path, res)
+        if path:
+            print 94, 'Found', rule, path, res
+    #print 100, res, len(res)
+    return len(res) > 1
+
+
+def match(rule, grammar, utterance, path, res):
+    done = False
+    left = [a[0] for a in grammar]
+    if len(rule[1]) == 0:
+        if len(utterance) == 0:
+            if path not in res:
+                res += [path]
+        else:
+            return (path, False)
+        return (path, True)
+
+    # print 103, rule, utterance
+    for s in rule[1]:
+        # print 104, s, rule, utterance
+        if len(utterance) == 0:
+            return (None, False)
+        if s == utterance[0]:
+            (path, done) = match((rule[0], rule[1][1:]), grammar, utterance[1:], path[:], res)
+            #if path and not done:
+                # match((rule[0], rule[1][1:]), grammar, utterance[2:], path[:], res)
+                #utterance = utterance[1:]
+            return (path, done)
+        elif s in left:
+            new_rules = [a for a in grammar if a[0] == s]
+
+            for new_rule in new_rules:
+                # print 114, s, rule, new_rule, path
+                (path, done) = match(new_rule, grammar, utterance, path + [new_rule], res)
+                if path:
+                    if not done:
+                        utterance = utterance[1:]
+                    # print 116, s, rule, new_rule, path
+                    continue
+                else:
+                    continue
+        else:
+            return ([], False)
+    return ([], False)
 
 # We have provided a few test cases. You will likely want to add your own.
 
-grammar1 = [ 
-       ("S", [ "P", ]),
-       ("S", [ "a", "Q", ]) ,
-       ("P", [ "a", "T"]),
-       ("P", [ "c" ]),
-       ("Q", [ "b" ]),
-       ("T", [ "b" ]),
-       ] 
+grammar1 = [
+    ("S", ["P", ]),
+    ("S", ["a", "Q", ]),
+    ("P", ["a", "T"]),
+    ("P", ["c"]),
+    ("Q", ["b"]),
+    ("T", ["b"]),
+]
+
 print isambig(grammar1, "S", ["a", "b"]) == True
 print isambig(grammar1, "S", ["c"]) == False
 
-grammar2 = [ 
-       ("A", [ "B", ]),
-       ("B", [ "C", ]),
-       ("C", [ "D", ]),
-       ("D", [ "E", ]),
-       ("E", [ "F", ]),
-       ("E", [ "G", ]),
-       ("E", [ "x", "H", ]),
-       ("F", [ "x", "H"]),
-       ("G", [ "x", "H"]),
-       ("H", [ "y", ]),
-       ] 
-print isambig(grammar2, "A", ["x", "y"]) == True
-print isambig(grammar2, "E", ["y"]) == False
+grammar2 = [
+    ("A", ["B", ]),
+    ("B", ["C", ]),
+    ("C", ["D", ]),
+    ("D", ["E", ]),
+    ("E", ["F", ]),
+    ("E", ["G", ]),
+    ("E", ["x", "H", ]),
+    ("F", ["x", "H"]),
+    ("G", ["x", "H"]),
+    ("H", ["y", ]),
+]
+print isambig(grammar2, "A", ["x", "y"]),  True
+print isambig(grammar2, "E", ["y"]), False
 
-grammar3 = [ # Rivers in Kenya
-       ("A", [ "B", "C"]),
-       ("A", [ "D", ]),
-       ("B", [ "Dawa", ]),
-       ("C", [ "Gucha", ]),
-       ("D", [ "B", "Gucha"]),
-       ("A", [ "E", "Mbagathi"]),
-       ("A", [ "F", "Nairobi"]),
-       ("E", [ "Tsavo" ]),
-       ("F", [ "Dawa", "Gucha" ])
-       ] 
-print isambig(grammar3, "A", ["Dawa", "Gucha"]) == True
+grammar3 = [  # Rivers in Kenya
+    ("A", ["B", "C"]),
+    ("A", ["D", ]),
+    ("B", ["Dawa", ]),
+    ("C", ["Gucha", ]),
+    ("D", ["B", "Gucha"]),
+    ("A", ["E", "Mbagathi"]),
+    ("A", ["F", "Nairobi"]),
+    ("E", ["Tsavo"]),
+    ("F", ["Dawa", "Gucha"])
+]
+print isambig(grammar3, "A", ["Dawa", "Gucha"]), True
 print isambig(grammar3, "A", ["Dawa", "Gucha", "Nairobi"]) == False
 print isambig(grammar3, "A", ["Tsavo"]) == False
 
