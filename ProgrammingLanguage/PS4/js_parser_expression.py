@@ -113,6 +113,12 @@ start = 'exp'    # we'll start at expression this time
 precedence = (
         # Fill in the precedence and associativity. List the operators
         # in order of _increasing_ precedence (start low, go to high). 
+        ('left', 'OROR'),
+        ('left', 'ANDAND'),
+        ('left', 'GE', 'LE', 'GT', 'LT', 'EQUALEQUAL'),
+        ('left', 'PLUS', 'MINUS'),
+        ('left', 'TIMES', 'DIVIDE'),
+        ('right', 'NOT')
         
 ) 
 
@@ -161,7 +167,40 @@ def p_exp_parens(p):
 # operator rules together. 
 ######################################################################
 
-
+def p_exp_binop(p):
+    """exp  : exp OROR exp
+            | exp ANDAND exp
+            | exp EQUALEQUAL exp
+            | exp LT exp
+            | exp GT exp
+            | exp LE exp
+            | exp GE exp
+            | exp PLUS exp
+            | exp MINUS exp
+            | exp TIMES exp
+            | exp DIVIDE exp
+    """
+    p[0] = ("binop", p[1], p[2], p[3])
+    
+def p_exp_call(p):
+    'exp : IDENTIFIER LPAREN optargs RPAREN'
+    p[0] = ("call", p[1], p[3])
+    
+def p_optargs_empty(p):
+    'optargs :  '
+    p[0] = []
+    
+def p_optargs(p):
+    'optargs : args'
+    p[0] = p[1]
+    
+def p_args(p):
+    'args : exp COMMA args'
+    p[0] = [p[1]] + p[3]
+    
+def p_args_1(p):
+    'args : exp'
+    p[0] = [p[1]]
 
 
 
@@ -205,8 +244,8 @@ print test_parser(jstext3) == jstree3
 
 # String and boolean constants, comparisons.
 jstext4 = ' "hello" == "goodbye" || true && false '
-jstree4 = ('binop', ('binop', ('string', 'hello'), '==', ('string', 'goodbye')), '||', ('binop', ('true', 'true'), '&&', ('false', 'true')))
-print test_parser(jstext4) == jstree4
+jstree4 = ('binop', ('binop', ('string', 'hello'), '==', ('string', 'goodbye')), '||', ('binop', ('true', 'true'), '&&', ('false', 'false')))
+print 248, test_parser(jstext4), jstree4
 
 # Not, precedence, associativity.
 jstext5 = "! ! tricky || 3 < 5" 
@@ -216,5 +255,5 @@ print test_parser(jstext5) == jstree5
 # nested function calls!
 jstext6 = "apply(1, 2 + eval(recursion), sqrt(2))"
 jstree6 = ('call', 'apply', [('number', 1.0), ('binop', ('number', 2.0), '+', ('call', 'eval', [('identifier', 'recursion')])), ('call', 'sqrt', [('number', 2.0)])])
-print test_parser(jstext6) 
+print 258, test_parser(jstext6) 
 
