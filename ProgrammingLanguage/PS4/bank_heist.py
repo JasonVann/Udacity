@@ -49,11 +49,12 @@ taken = [ "mask", "urn" ]
 
 def heistvalid(available, limit, taken):
     # Replace this line with your one-line answer.
-
+    return sum(available[a][0] for a in taken) <= limit
 
 
 def heisttotal(available, limit, taken): 
     # Replace this line with your one-line answer.
+    return sum(available[a][1] for a in taken)
     
 # We have provided some test cases. You will likely want to make others.
 print heistvalid(available, limit, taken) == True
