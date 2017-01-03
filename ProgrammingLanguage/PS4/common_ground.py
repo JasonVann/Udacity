@@ -64,13 +64,30 @@
 chart = { }
 def csuffix(X,Y):
     # Fill in your code here.
-
+    if (X,Y) in chart:
+        return chart[(X, Y)]
+    
+    if len(X) == 0 or len(Y) == 0:
+        chart[(X, Y)] = 0
+    elif X[-1] != Y[-1]:
+        chart[(X, Y)] = 0
+    else:
+        chart[(X, Y)] = 1 + csuffix(X[:-1], Y[:-1])
+        
+    return chart[(X, Y)]
+        
+print 79, csuffix('abcd', 'befc')
+    
 def prefixes(X):
     # Fill in your code here (can be done in one or two lines). 
+    return [X[:i] for i in range(1, len(X)+1)]    
+
+print 85, prefixes('cat')
 
 def lsubstring(X,Y):
     # Fill in your code here (can be done in one or two lines).
-
+    return max(csuffix(x, y) for x in prefixes(X) for y in prefixes(Y))
+    
 # We have included some test cases. You will likely want to write your own.
 
 print lsubstring("Tapachula", "Temapache") == 5  # Mexico, "apach"
