@@ -44,10 +44,12 @@
 # reference f, so you'll want to think about nested environments.
 
 def filter_maker(f):
-        # Fill in your code here. You must return a function.
-
+    # Fill in your code here. You must return a function.
+    return lambda x: [i for i in x if f(i)]
+        
 def map_maker(f):
-        # Fill in your code here. You must return a function.
+    # Fill in your code here. You must return a function.
+    return lambda x: [f(i) for i in x]
 
 # We have included a few test cases. You will likely want to add your own.
 numbers = [1,2,3,4,5,6,7]
