@@ -49,12 +49,17 @@ webpage = """<html>
 <p>Paragraphs use (P) tags. Unordered lists use (UL) tags.
 <ul>
   <li> List items use (LI) tags. </li> 
-
-  <!-- You should update this HTML until the order and nesting of
-       the tags match the reference image. --> 
-
+  <li> Text can be <b>bold (B)</b>, <i>italic (I)</i>, <small>small (SMALL)</small>, <BIG>big (BIG)</BIG>, 
+  or look like a <TT>typewriter (TT) .</TT></li>
+  <li> There are also ordered lists that use (OL) tags. Let's make one nested inside our current list item.
+    <ol>
+        <li>Text can also be <strong>strong (STRONG)</strong> or <EM> emphasized (EM)</EM>, which typically renders like bold and italics.</li>
+        <li>Webpages can have <a href="target">hyperlinks</a> </li>
+    </ol></li>
+  <li>It is also possibel to include images<img src="cs262.png"></img></li>
 </ul>
 </p> 
+<p>We will finish off with one last paragraph.</p>
 </html> 
 """
 
