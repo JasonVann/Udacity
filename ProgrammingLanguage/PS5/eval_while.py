@@ -86,5 +86,9 @@
 
 def eval_while(while_stmt, env):
         # Fill in your own code here. Can be done in as few as 4 lines.
-
-
+        #print 89, while_stmt
+        cond = while_stmt[1]
+        body = while_stmt[2]
+        while eval_exp(cond, env):
+            eval_stmts(body, env)
+            #test = eval_exp(exp, env)
