@@ -71,11 +71,12 @@ def eval_call(exp,env):
     elif fvalue[0] == "function":
         fparams = fvalue[1] 
         fbody = fvalue[2] 
+        fenv = fvalue[3]
         if len(fparams) <> len(args):
             print "ERROR: wrong number arguments to " + fname
         else: 
             # make a new environment frame
-            newenv = (env,{ }) 
+            newenv = (fenv,{ }) 
             for i in range(len(args)):
                 argval = eval_exp(args[i],env)
                 (newenv[1])[fparams[i]] = argval
