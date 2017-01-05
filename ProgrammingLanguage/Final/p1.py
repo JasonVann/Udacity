@@ -51,6 +51,36 @@ tokens = ('PLUS', 'MINUS', 'TIMES', 'DIVIDE',
 
 # Place your token definition rules here. 
 
+def t_PLUS(t):
+    r'\+'
+    return t
+    
+def t_MINUS(t):
+    r'-'
+    return t
+    
+def t_TIMES(t):
+    r'\*'
+    return t
+    
+def t_DIVIDE(t):
+    r'/'
+    return t
+    
+def t_IDENT(t):
+    r'[a-zA-Z][a-zA-Z_]*'
+    return t
+    
+def t_STRING(t):
+    r'\'[a-zA-Z0-9\\ \"]*\'| \"[a-zA-Z0-9\\ \']*\"'
+    t.value = t.value[1:-1]
+    return t
+    
+def t_NUMBER(t):
+    r'[0-9][0-9_]*'
+    t.value = int(''.join([a for a in t.value if a != '_']))
+    return t
+    
 #
 #####
 
