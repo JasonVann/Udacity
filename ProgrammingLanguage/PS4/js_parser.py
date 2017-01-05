@@ -162,11 +162,6 @@ def p_statements(p):
     'statements : stmt SEMICOLON statements '
     #print 168, p[1], p[3]
     p[0] = [p[1]] + p[3]
-
-def p_statements_1(p):
-    'statements : stmt SEMICOLON'
-    #print 168, p[1], p[3]
-    p[0] = [p[1]]
     
 def p_statements_empty(p):
     'statements : '

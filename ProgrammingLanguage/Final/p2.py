@@ -44,12 +44,42 @@ start = 'exp'    # the start symbol in our grammar
 #
 
 # Place your grammar definition rules here. 
+def p_exp(p):
+    'exp : NUMBER'
+    p[0] = ("number", p[1])
+    
+def p_exp_3(p):
+    'exp : LPAREN exp RPAREN'
+    p[0] = p[2]
+    
+def p_exp_2(p):
+    'exp : LPAREN expcomma RPAREN'
+    p[0] = ('tuple', p[2])
+    
+def p_expcomma(p):
+    'expcomma : exp'
+    p[0] = [p[1]]
+    
+def p_expcomma_1(p):
+    'expcomma : exp COMMA expcomma'
+    p[0] = [p[1]] + p[3]
+
+def p_exp_list(p):
+    'exp : LBRACKET expcomma RBRACKET'
+    p[0] = ("list", p[2])
+    
+'''
+def p_exp_list2(p):
+    'exp : LBRACKET exp RBRACKET'
+    p[0] = ("list", [p[2]])
+'''
 
 #
 #####
 
 def p_error(p):
-        raise SyntaxError
+    print 86, p
+    raise SyntaxError
 
 
 # We have provided a lexer for you. You should not change it.
