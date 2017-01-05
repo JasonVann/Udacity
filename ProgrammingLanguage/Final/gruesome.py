@@ -26,8 +26,9 @@
 import re 
 
 def gruesome(str):
-        # write your code here 
-
+    # write your code here 
+    pattern = "[A-Za-z]*[b][A-Za-z]*[t][A-Za-z]*|[A-Za-z]*[t][A-Za-z]*[g][A-Za-z]*"
+    return re.findall(pattern, str)
 
 # We have included some testing code to help you check your work. Since
 # this is the final exam, you will definitely want to add your own tests.
@@ -48,7 +49,7 @@ every other leaf were powerless, he could read his own history with an
 interest which never failed. This was the page at which the favourite
 volume always opened:""" # Jane Austen 
 
-print gruesome(test2) == ['but', 'Baronetage', 'contemplating']
+print gruesome(test2), ['but', 'Baronetage', 'contemplating']
 
 test3 = """Every inch of wall space is covered by a bookcase. Each
 bookcase has six shelves, going almost to the ceiling. Some
