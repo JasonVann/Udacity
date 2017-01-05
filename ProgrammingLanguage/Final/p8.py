@@ -124,4 +124,18 @@
 # For this challenge problem, we do not provide any testing hints. However,
 # you may use any code you like from any source (such as this class). 
 
-grammar = []
+grammar = [
+    ("S", ["E"]),
+    ("E", ["(", "E", ")"]),
+    ("E", ["E", "-", "E"]),
+    ("E", ["E", "+", "E"]),
+    ("E", ["id"]),
+    ("E", ["id", "(", "A", ")"]),
+    ("A", []),
+    ("A", ["NA"]),
+    ("NA", ["E"]),
+    ("NA", ["E", ",", "NA"])
+    ]
+
+#["id", "(", "(", "id", ")", ",", "id", ")"]
+
