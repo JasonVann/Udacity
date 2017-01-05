@@ -46,8 +46,16 @@ start = 1
 # Vague Hint: Draw a picture, and then draw all the arrows backwards. 
 
 def reverse(edges,accepting,start): 
-        # write your code here ...
-                
+    # write your code here ...
+    new_accepting, new_start = start, accepting
+    new_edges = {}
+    for k, values in edges.items():
+        for v in values:
+            if (v, k[1]) not in new_edges:
+                new_edges[(v, k[1])] = []
+            new_edges[(v, k[1])] += [k[0]]
+            
+    return (new_edges, new_accepting, new_start)    
 
 # We have included some testing code to help you check your work. Since
 # this is the final exam, you will definitely want to add your own tests.
