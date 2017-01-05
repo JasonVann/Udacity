@@ -139,8 +139,35 @@ fragment2 = [ ("a", ["1"] ) ,           # a = 1
 # recursively because you may find even more dead code!  
 
 def removedead(fragment,returned): 
-        # fill in your answer here (can be done in about a dozen lines)
-
+    # fill in your answer here (can be done in about a dozen lines)
+    changed = True
+    new_frag = fragment[::-1]
+    # print 145, new_frag
+    while changed:
+        frag = new_frag[:]
+        left = [line[0] for line in frag]
+        changed = False
+        new_frag = [] #[frag[0]]
+        #live = frag[0][1] # + [frag[0][0]]
+        live = returned[:]
+        # print 154, frag, left
+        for i in range(len(frag)):
+            (LHS, RHS) = frag[i]
+            if LHS in live:
+                live.remove(LHS)
+                changed = True
+                new_frag += [(LHS, RHS)]
+            
+            for v in RHS:
+                if v in left and v not in live:
+                    changed = True
+                    live += [v]
+                    # print 160, live
+        if new_frag == frag:
+            break
+    print 163, new_frag, live, left
+    return new_frag[::-1]
+        
 # We have provided a few test cases. You may want to write your own.
 
 fragment1 = [ ("a", ["1"]), 
@@ -157,6 +184,10 @@ print removedead(fragment1, ["a","d"]) == \
          ('a', ['5']), 
          ('d', ['c', 'b'])]
 
+fragment2 = [ ("a", ["1"] ) ,           # a = 1
+              ("b", ["a", "1"] ),       # b = a operation 1
+              ("c", ["2"] ), ]          # c = 2 
+              
 print removedead(fragment2, ["c"]) == [('c', ['2'])]
 
 print removedead(fragment1, ["a"]) == [('a', ['5'])]

@@ -12,7 +12,7 @@
 #       and an HTML parser that makes abstract syntax trees
 #
 #       a context-free grammar defining well-formed JavaScript
-#       and an HTML parser than makes abstract syntax trees
+#       and an JS parser than makes abstract syntax trees
 #
 #       a recursive tree-walking interpreter for HTML
 #               that calls a graphics library and a JavaScript interpreter
@@ -44,8 +44,13 @@
 # possible to make interesting webpages with it. Use your creativity!
 
 webpage = """<html>
-Put something here. You must include embedded JavaScript for full credit,
-but beyond that, do whatever you like.
+<h1>Welcom to my homepage</h1>
+<p>Here's my favorite number
+<script type="text/javascript">
+var i = 88;
+write(i);
+</script>
+</p>
 </html>
 """
 
