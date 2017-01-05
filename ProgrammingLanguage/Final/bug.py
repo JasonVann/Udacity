@@ -110,7 +110,7 @@ write( f(6,7) ) ;
 # If you think the bug is that "function" call expressions do not 
 # evaluate their bodies in the correct environment, uncomment "bug =
 # 7". 
-# bug = 7
+bug = 7
 
 # If you think the bug is that "function" call expressions evaluate their
 # arguments in the wrong order, uncomment "bug = 8". 
