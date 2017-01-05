@@ -66,11 +66,35 @@ def interesting1(test):
 # Hint: Compose "find all subsets" with "find max". 
 
 def autodebug(test, interesting): 
-        # find the smallest subset of test that is still interesting!
-        if not interesting(test):
-                return None
-        # your code here ...
-
+    # find the smallest subset of test that is still interesting!
+    if not interesting(test):
+        return None
+    #res = interesting(test)
+    l = 0
+    r = len(test)
+    last_incr = 0
+    new_test = test[:]
+    res = []
+    incr = 1
+    while True:
+        #mid = (l + r) / 2
+        found = False
+        for i in range(0, len(new_test), incr):
+            test2 = new_test[l: i] + new_test[i + 1:r]
+            if interesting(test2):
+                found = True
+                last_incr = incr
+                res = test2
+                new_test = test2
+                incr = 2 * incr
+                break
+        if not found:
+            if incr == 1:
+                break
+            incr = min((last_incr + incr)/2, incr - 1)
+    print 96, res
+    return res
+        
 # We have written a few test cases. You may want to include others, but
 # keep them small to spare our servers. 
 
