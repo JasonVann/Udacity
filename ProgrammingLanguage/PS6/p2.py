@@ -58,7 +58,8 @@ jsparser   = yacc.yacc(module=jsgrammar,tabmodule="parsetabjs")
 
 # The heart of our browser: recursively interpret an HTML abstract
 # syntax tree. 
-def interpret(ast):     
+def interpret(ast):   
+        #print 62, ast   
         for node in ast:
                 nodetype = node[0]
                 if nodetype == "word-element":
@@ -78,7 +79,10 @@ def interpret(ast):
                         jstext = node[1]; 
                         jsast = jsparser.parse(jstext,lexer=jslexer) 
                         result = jsinterp.interpret(jsast)
-                        graphics.word(result) 
+                        htmlast = htmlparser.parse(result, lexer=htmllexer)
+                        #print 88, result, htmlast
+                        interpret(htmlast)
+                        #graphics.word(result) 
 
 # Here is an example webpage that includes JavaScript that generates HTML.
 # You can use it for testing.
@@ -117,6 +121,7 @@ tricky(10);
 </html>"""
 
 htmlast = htmlparser.parse(webpage,lexer=htmllexer) 
+print 122, htmlast
 graphics.initialize() # let's start rendering a webpage
 interpret(htmlast) 
 graphics.finalize() # we're done rendering this webpage
