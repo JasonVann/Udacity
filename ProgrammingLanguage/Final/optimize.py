@@ -78,7 +78,6 @@ def optimize(ast):
     new_ast = []
     memo = {}
     for line in ast:
-        memo = expire(line, memo)
         if line[2] not in memo:
             memo[line[2]] = [line[1]]
             new_ast += [line]
@@ -87,6 +86,7 @@ def optimize(ast):
             # memo[line[2]] = ('identifier', line[1])
             memo[line[2]] += [line[1]]
 
+        memo = expire(line, memo)
     return new_ast
 
 
@@ -99,7 +99,8 @@ def expire(line, memo):
                 memo2.pop(k)
             else:
                 v.remove(line[1])
-        if line[1] in v:
+        # Don't expire the one we just added
+        if line[1] in v and k != line[2]:
             memo2[k].remove(line[1])
     return memo2
 
